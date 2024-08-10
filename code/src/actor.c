@@ -152,7 +152,7 @@ void Actor_Init() {
     gActorOverlayTable[0xE0].initInfo->update = EnAnubice_rUpdate;
 
     gActorOverlayTable[0xE6].initInfo->init = BgBdanSwitch_rInit;
-
+    
     gActorOverlayTable[0xE7].initInfo->init = EnMa1_rInit;
 
     gActorOverlayTable[0xF1].initInfo->init    = ItemOcarina_rInit;
@@ -449,6 +449,36 @@ void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
 
     if (tempHammerQuakeFlag != 0) {
         globalCtx->actorCtx.hammerQuakeFlag = tempHammerQuakeFlag;
+    }
+}
+
+#include "gfx.h"
+#include "draw.h"
+#include "lib/printf.h"
+
+#include "multiplayer.h"
+
+void Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
+    Draw_ClearBackbuffer();
+
+    char buffer [50];
+    snprintf_(buffer, 50, "ActorSpawn ID: %x", actorId);
+    Draw_DrawString(0, 0, COLOR_WHITE, (const char*)buffer);
+
+    Draw_CopyBackBuffer();
+
+    if (actorId == 0x01AF) {
+        PosRot posRot;
+
+        posRot.pos.x = posX;
+        posRot.pos.y = posY;
+        posRot.pos.z = posZ;
+
+        posRot.rot.x = rotX;
+        posRot.rot.y = rotY;
+        posRot.rot.z = rotZ;
+
+        Multiplayer_Send_ActorSpawn(actorId, posRot, params);
     }
 }
 

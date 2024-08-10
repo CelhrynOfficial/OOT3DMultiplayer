@@ -2195,11 +2195,15 @@ RandomGsLoc_BlockSpawn_Soil_patch:
 RandomGsLoc_SkipSoilJingle_patch:
     bl hook_RandomGsLoc_SkipSoilJingle
 
+.section .patch_ActorSpawn
+.global ActorSpawn_patch
+ActorSpawn_patch:
+    b hook_ActorSpawn
+
 .section .patch_ActorDraw
 .global ActorDraw_patch
 ActorDraw_patch:
     bl hook_ActorDraw
-
 
 .section .patch_FlyingPotCollision
 .global FlyingPotCollision_patch
