@@ -78,9 +78,6 @@ typedef void (*TitleCard_Update_proc)(GlobalContext* globalCtx, TitleCardContext
 
 
 void Actor_Init() {
-    ActorFunc WolfosActor_Init = gActorOverlayTable[0x1AF].initInfo->init;
-    gActorOverlayTable[0x1AF].initInfo->init    = WolfosActor_rInit;
-
     gActorOverlayTable[0x0].initInfo->init    = PlayerActor_rInit;
     gActorOverlayTable[0x0].initInfo->update  = PlayerActor_rUpdate;
     gActorOverlayTable[0x0].initInfo->destroy = PlayerActor_rDestroy;
@@ -462,19 +459,22 @@ extern void ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16
 
 void Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
     
-    if (actorId == 0x1AF) {
-        PosRot posRot;
+    // if (actorId == 0x016D) {
+    //     PosRot posRot;
 
-        posRot.pos.x = posX;
-        posRot.pos.y = posY;
-        posRot.pos.z = posZ;
+    //     posRot.pos.x = posX;
+    //     posRot.pos.y = posY;
+    //     posRot.pos.z = posZ;
 
-        posRot.rot.x = rotX;
-        posRot.rot.y = rotY;
-        posRot.rot.z = rotZ;
+    //     posRot.rot.x = rotX;
+    //     posRot.rot.y = rotY;
+    //     posRot.rot.z = rotZ;
 
-        Multiplayer_Send_ActorSpawn(actorId, posRot, params);
-    }
+    //     Multiplayer_Send_ActorSpawn(actorId, posRot, params);
+
+    //     // ActorSpawnOrig(actorCtx, globalCtx, 0x004C, posX, posY, posZ, rotX, rotY, rotZ, 0, initImmediately);
+    //     // return;
+    // }
 
     ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
 }

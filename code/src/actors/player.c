@@ -85,17 +85,7 @@ void Player_SetChildCustomTunicCMAB(void) {
     TexAnim_Spawn(PLAYER->skelAnime.unk_28->unk_0C, cmabMan);
 }
 
-#include "multiplayer.h"
-#include "gfx.h"
-#include "draw.h"
-
 #include "actor.h"
-
-void WolfosActor_rInit(Actor* thisx, GlobalContext* globalCtx) {
-    Multiplayer_Send_EnemySpawn(thisx);
-
-    // WolfosActor_Init(thisx, globalCtx);
-}
 
 void PlayerActor_rInit(Actor* thisx, GlobalContext* globalCtx) {
     if (IceTrap_ActiveCurse == ICETRAP_CURSE_SHIELD) {

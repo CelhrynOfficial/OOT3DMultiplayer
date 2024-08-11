@@ -5,8 +5,6 @@
 
 extern u16 healthDecrement;
 
-void WolfosActor_rInit(Actor* thisx, GlobalContext* globalCtx);
-
 void PlayerActor_rInit(Actor* thisx, GlobalContext* globalCtx);
 void PlayerActor_rUpdate(Actor* thisx, GlobalContext* globalCtx);
 void PlayerActor_rDestroy(Actor* thisx, GlobalContext* globalCtx);

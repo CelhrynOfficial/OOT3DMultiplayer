@@ -12,7 +12,7 @@
 
 ActorInit EnLinkPuppet_InitVars = {
     0x1,                             // ID
-    ACTORTYPE_PLAYER,                   // Type
+    ACTORTYPE_NPC,                   // Type
     0xFF,                            // Room
     0x2000410,                       // Flags
     21,                              // Object ID (20: Adult, 21: Child)

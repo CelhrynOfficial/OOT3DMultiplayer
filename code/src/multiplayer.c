@@ -45,22 +45,6 @@ static void Multiplayer_Sync_SharedProgress();
 static void Multiplayer_SendPacket(u16 packageSize, u16 targetID);
 static void Multiplayer_UnpackPacket(u16 senderID);
 
-
-typedef struct {
-    s16 id;
-    Vec3f position;
-    s16 action;
-    u8 isAlive;
-} EnemyState;
-
-
-#define PACKET_ENEMY_SPAWN  0x30
-#define PACKET_ENEMY_UPDATE 0x31
-#define PACKET_ENEMY_DEATH  0x32
-
-
-
-
 typedef struct {
     // SaveContext
     u16 healthCapacity;
@@ -593,10 +577,11 @@ void Multiplayer_Sync_Update(void) {
     }
 }
 
-
-
-
-
+// static void Multiplayer_Sync_TunicColor(void) {
+//     if (gSettingsContext.customTunicColors == ON) {
+//         Multiplayer_Send_Tunic();
+//     }
+// }
 
 static void Multiplayer_Sync_SharedProgress(void) {
     // If a player gets the 4th heart piece but stays in the item get message while another
@@ -2516,16 +2501,13 @@ void Multiplayer_Send_ActorSpawn(s16 actorId, PosRot posRot, s16 params) {
     if (!IsSendReceiveReady() || gSettingsContext.mp_SharedProgress == OFF) {
         return;
     }
-    
     memset(mBuffer, 0, mBufSize);
     u8 memSpacer = PrepareSharedProgressPacket(PACKET_ACTORSPAWN);
 
     mBuffer[memSpacer++] = gGlobalContext->sceneNum;
     mBuffer[memSpacer++] = gGlobalContext->roomNum;
-    
     mBuffer[memSpacer++] = actorId;
     memcpy(&mBuffer[memSpacer], &posRot, sizeof(PosRot));
-    
     memSpacer += sizeof(PosRot) / 4;
     mBuffer[memSpacer++] = params;
     Multiplayer_SendPacket(memSpacer, UDS_BROADCAST_NETWORKNODEID);
@@ -2535,7 +2517,6 @@ void Multiplayer_Receive_ActorSpawn(u16 senderID) {
     if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
         return;
     }
-
     u8 memSpacer = GetSharedProgressMemSpacerOffset();
 
     s16 sceneNum = mBuffer[memSpacer++];
@@ -2703,133 +2684,6 @@ void Multiplayer_Receive_AmmoChange(u16 senderID) {
     }
 }
 
-
-
-
-void Multiplayer_Send_EnemySpawn(Actor* enemy) {
-    if (!IsSendReceiveReady() || gSettingsContext.mp_SharedProgress == OFF) {
-        return;
-    }
-
-    memset(mBuffer, 0, mBufSize);
-    u8 memSpacer = PrepareSharedProgressPacket(PACKET_ENEMY_SPAWN);
-
-    mBuffer[memSpacer++] = enemy->id;
-    memcpy(&mBuffer[memSpacer], &enemy->world.pos, sizeof(Vec3f));
-    // mBuffer[memSpacer++] = enemy->action;
-    mBuffer[memSpacer++] = 1; // isAlive
-
-    Multiplayer_SendPacket(memSpacer, UDS_BROADCAST_NETWORKNODEID);
-}
-
-void Multiplayer_Receive_EnemySpawn(u16 senderID) {
-    if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
-        return;
-    }
-
-    u8 memSpacer = GetSharedProgressMemSpacerOffset();
-    s16 enemyId = mBuffer[memSpacer++];
-    Vec3f enemyPos;
-    
-    memcpy(&enemyPos, &mBuffer[memSpacer], sizeof(Vec3f));
-    memSpacer += sizeof(Vec3f) / 4;
-    
-    s16 action = mBuffer[memSpacer++];
-    u8 isAlive = mBuffer[memSpacer++];
-
-    // Check if enemy already exists at the same position
-    for (Actor* actor = gGlobalContext->actorCtx.actorList[ACTORTYPE_ENEMY].first; actor != NULL; actor = actor->next) {
-        if (actor->id == enemyId && 
-            (s32)actor->world.pos.x == (s32)enemyPos.x &&
-            (s32)actor->world.pos.y == (s32)enemyPos.y &&
-            (s32)actor->world.pos.z == (s32)enemyPos.z) {
-            return; // Enemy already exists
-        }
-    }
-
-    // If enemy does not exist, spawn it
-    if (isAlive) {
-        Actor_Spawn(&gGlobalContext->actorCtx, gGlobalContext, enemyId, enemyPos.x, enemyPos.y, enemyPos.z, 0, 0, 0, 0, FALSE);
-    }
-}
-
-
-void Multiplayer_Send_EnemyUpdate(Actor* enemy) {
-    if (!IsSendReceiveReady() || gSettingsContext.mp_SharedProgress == OFF) {
-        return;
-    }
-
-    memset(mBuffer, 0, mBufSize);
-    u8 memSpacer = PrepareSharedProgressPacket(PACKET_ENEMY_UPDATE);
-
-    mBuffer[memSpacer++] = enemy->id;
-    memcpy(&mBuffer[memSpacer], &enemy->world.pos, sizeof(Vec3f));
-    // mBuffer[memSpacer++] = enemy->action;
-
-    Multiplayer_SendPacket(memSpacer, UDS_BROADCAST_NETWORKNODEID);
-}
-
-void Multiplayer_Receive_EnemyUpdate(u16 senderID) {
-    if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
-        return;
-    }
-
-    u8 memSpacer = GetSharedProgressMemSpacerOffset();
-    s16 enemyId = mBuffer[memSpacer++];
-    Vec3f enemyPos;
-    memcpy(&enemyPos, &mBuffer[memSpacer], sizeof(Vec3f));
-    memSpacer += sizeof(Vec3f) / 4;
-    s16 action = mBuffer[memSpacer++];
-
-    // Find and update the enemy
-    for (Actor* actor = gGlobalContext->actorCtx.actorList[ACTORTYPE_ENEMY].first; actor != NULL; actor = actor->next) {
-        if (actor->id == enemyId) {
-            actor->world.pos = enemyPos;
-            // actor->action = action;
-            break;
-        }
-    }
-}
-
-void Multiplayer_Send_EnemyDeath(Actor* enemy) {
-    if (!IsSendReceiveReady() || gSettingsContext.mp_SharedProgress == OFF) {
-        return;
-    }
-
-    memset(mBuffer, 0, mBufSize);
-    u8 memSpacer = PrepareSharedProgressPacket(PACKET_ENEMY_DEATH);
-
-    mBuffer[memSpacer++] = enemy->id;
-    memcpy(&mBuffer[memSpacer], &enemy->world.pos, sizeof(Vec3f));
-
-    Multiplayer_SendPacket(memSpacer, UDS_BROADCAST_NETWORKNODEID);
-}
-
-
-void Multiplayer_Receive_EnemyDeath(u16 senderID) {
-    if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
-        return;
-    }
-
-    u8 memSpacer = GetSharedProgressMemSpacerOffset();
-    s16 enemyId = mBuffer[memSpacer++];
-    Vec3f enemyPos;
-    memcpy(&enemyPos, &mBuffer[memSpacer], sizeof(Vec3f));
-
-    // Find and destroy the enemy
-    for (Actor* actor = gGlobalContext->actorCtx.actorList[ACTORTYPE_ENEMY].first; actor != NULL; actor = actor->next) {
-        if (actor->id == enemyId && 
-            (s32)actor->world.pos.x == (s32)enemyPos.x &&
-            (s32)actor->world.pos.y == (s32)enemyPos.y &&
-            (s32)actor->world.pos.z == (s32)enemyPos.z) {
-            Actor_Kill(actor);
-            break;
-        }
-    }
-}
-
-
-
 // Send & Receive
 
 static void Multiplayer_SendPacket(u16 packageSize, u16 targetID) {
@@ -2870,59 +2724,53 @@ static void Multiplayer_UnpackPacket(u16 senderID) {
     PacketIdentifier identifier = mBuffer[0];
 
     // Make sure these are lined up with the PacketIdentifier enum
-    
     static void (*receive_funcs[])(u16 senderID_) = {
-    // Ghost Data
-    Multiplayer_Receive_GhostPing,
-    Multiplayer_Receive_GhostData,
-    Multiplayer_Receive_GhostData_JointTable,
-    Multiplayer_Receive_LinkSFX,
+        // Ghost Data
+        Multiplayer_Receive_GhostPing,
+        Multiplayer_Receive_GhostData,
+        Multiplayer_Receive_GhostData_JointTable,
+        Multiplayer_Receive_LinkSFX,
+        // Shared Progress
+        Multiplayer_Receive_FullSyncRequest,
+        Multiplayer_Receive_FullSyncPing,
+        Multiplayer_Receive_BaseSync,
+        Multiplayer_Receive_FullSceneFlagSync,
+        Multiplayer_Receive_FullEntranceSync,
+        Multiplayer_Receive_Item,
+        Multiplayer_Receive_MaxHealth,
+        Multiplayer_Receive_KokiriSwordEquip,
+        Multiplayer_Receive_BGSFlag,
+        Multiplayer_Receive_MagicArrow,
+        Multiplayer_Receive_GreatFairyBuff,
+        Multiplayer_Receive_MagicBeanDiff,
+        Multiplayer_Receive_MagicBeansBoughtUpdate,
+        Multiplayer_Receive_EquipmentBit,
+        Multiplayer_Receive_UpgradesBit,
+        Multiplayer_Receive_QuestItemBit,
+        Multiplayer_Receive_DungeonItemBit,
+        Multiplayer_Receive_DungeonKeyUpdate,
+        Multiplayer_Receive_GSTokenDiff,
+        Multiplayer_Receive_EventChkInfBit,
+        Multiplayer_Receive_ItemGetInfBit,
+        Multiplayer_Receive_InfTableBit,
+        Multiplayer_Receive_ActorFlagBit,
+        Multiplayer_Receive_SceneFlagBit,
+        Multiplayer_Receive_GSFlagBit,
+        Multiplayer_Receive_BigPoePoints,
+        Multiplayer_Receive_FishingFlag,
+        Multiplayer_Receive_WorldMapBit,
+        Multiplayer_Receive_ExtInfBit,
+        Multiplayer_Receive_DiscoveredScene,
+        Multiplayer_Receive_DiscoveredEntrance,
+        Multiplayer_Receive_TriforcePieces,
+        Multiplayer_Receive_UnlockedDoor,
+        Multiplayer_Receive_ActorUpdate,
+        Multiplayer_Receive_ActorSpawn,
+        // Etc
+        Multiplayer_Receive_HealthChange,
+        Multiplayer_Receive_RupeeChange,
+        Multiplayer_Receive_AmmoChange,
+    };
 
-    // Shared Progress
-    Multiplayer_Receive_FullSyncRequest,
-    Multiplayer_Receive_FullSyncPing,
-    Multiplayer_Receive_BaseSync,
-    Multiplayer_Receive_FullSceneFlagSync,
-    Multiplayer_Receive_FullEntranceSync,
-    Multiplayer_Receive_Item,
-    Multiplayer_Receive_MaxHealth,
-    Multiplayer_Receive_KokiriSwordEquip,
-    Multiplayer_Receive_BGSFlag,
-    Multiplayer_Receive_MagicArrow,
-    Multiplayer_Receive_GreatFairyBuff,
-    Multiplayer_Receive_MagicBeanDiff,
-    Multiplayer_Receive_MagicBeansBoughtUpdate,
-    Multiplayer_Receive_EquipmentBit,
-    Multiplayer_Receive_UpgradesBit,
-    Multiplayer_Receive_QuestItemBit,
-    Multiplayer_Receive_DungeonItemBit,
-    Multiplayer_Receive_DungeonKeyUpdate,
-    Multiplayer_Receive_GSTokenDiff,
-    Multiplayer_Receive_EventChkInfBit,
-    Multiplayer_Receive_ItemGetInfBit,
-    Multiplayer_Receive_InfTableBit,
-    Multiplayer_Receive_ActorFlagBit,
-    Multiplayer_Receive_SceneFlagBit,
-    Multiplayer_Receive_GSFlagBit,
-    Multiplayer_Receive_BigPoePoints,
-    Multiplayer_Receive_FishingFlag,
-    Multiplayer_Receive_WorldMapBit,
-    Multiplayer_Receive_ExtInfBit,
-    Multiplayer_Receive_DiscoveredScene,
-    Multiplayer_Receive_DiscoveredEntrance,
-    Multiplayer_Receive_TriforcePieces,
-    Multiplayer_Receive_UnlockedDoor,
-    Multiplayer_Receive_ActorUpdate,
-    Multiplayer_Receive_ActorSpawn,
-    
-    // Enemy Sync
-    Multiplayer_Receive_EnemySpawn,
-    Multiplayer_Receive_EnemyUpdate,
-    Multiplayer_Receive_EnemyDeath,
-    
-    // Etc
-    Multiplayer_Receive_HealthChange,
-    Multiplayer_Receive_RupeeChange,
-    Multiplayer_Receive_AmmoChange,
-};
+    receive_funcs[identifier](senderID);
 }
