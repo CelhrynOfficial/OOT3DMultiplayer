@@ -716,6 +716,10 @@ SECTIONS
 		*(.patch_GetCustomMessageTextOne)
 	}
 
+	.patch_ActorSpawn 0x3738D0 : {
+		*(.patch_ActorSpawn)
+	}
+
 	.patch_ActorDraw 0x2D6310 : {
 		*(.patch_ActorDraw)
 	}

@@ -70,7 +70,7 @@ void before_GlobalContext_Update(GlobalContext* globalCtx) {
 void after_GlobalContext_Update() {
     // The alert is always displayed on the Title Screen, and for 10 seconds after opening a save file.
     if (missingRomfsAlert && romfsAlertFrames > 0) {
-        Draw_DrawFormattedStringTop(75, 180, COLOR_WHITE, "WARNING: THE ROMFS FOLDER IS MISSING!\nCOPY IT FROM AND TO THE SAME " "LOCATIONS\nUSED FOR CODE.IPS AND EXHEADER.BIN");
+        Draw_DrawFormattedStringTop(75, 180, COLOR_WHITE, "!WARNING: THE ROMFS FOLDER IS MISSING!\nCOPY IT FROM AND TO THE SAME " "LOCATIONS\nUSED FOR CODE.IPS AND EXHEADER.BIN");
         if (IsInGame()) {
             romfsAlertFrames--;
         }
@@ -81,14 +81,4 @@ void after_GlobalContext_Update() {
     if (gGlobalContext->state.running == 0) {
         Model_DestroyAll();
     }
-    
-    Draw_ClearBackbuffer();
-
-    char buffer [100];
-    snprintf_(buffer, 100, "ICI: %x", *((u32*)0x3738D0));
-    Draw_DrawString(0, 0, COLOR_WHITE, (const char*)buffer);
-
-    // 0xE92D4FFF
-
-    Draw_CopyBackBuffer();
 }

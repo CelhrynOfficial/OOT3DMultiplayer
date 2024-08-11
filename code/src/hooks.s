@@ -2033,22 +2033,13 @@ hook_RandomGsLoc_SkipSoilJingle:
 
 .global hook_ActorSpawn
 hook_ActorSpawn:
-    
     b Actor_rSpawn
-    
 
-    #push {r0-r8, sb, sl, fp, lr}
-    #ldr r15, =0x3738D4
+.global ActorSpawnOrig
+ActorSpawnOrig:
+    push {r0-r8, sb, sl, fp, lr}
+    ldr r15, =0x3738D4
     # r15 <=> PC
-
-
-#.global ActorSpawnOrig
-#ActorSpawnOrig:
-#    push {r0-r8, sb, sl, fp, lr}
-#    ldr r15, =0x3738D4
-#    # r15 <=> PC
-
-
 
 .global hook_ActorDraw
 hook_ActorDraw:

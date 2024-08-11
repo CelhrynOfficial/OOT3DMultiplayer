@@ -458,11 +458,11 @@ void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
 
 #include "multiplayer.h"
 
-// extern void ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately);
+extern void ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately);
 
 void Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
     
-    if (actorId == 0x01AF) {
+    if (actorId == 0x1AF) {
         PosRot posRot;
 
         posRot.pos.x = posX;
@@ -475,7 +475,8 @@ void Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId,
 
         Multiplayer_Send_ActorSpawn(actorId, posRot, params);
     }
-    // ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+
+    ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
 }
 
 void Actor_rDraw(Actor* actor, GlobalContext* globalCtx) {
