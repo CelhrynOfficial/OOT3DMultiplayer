@@ -25,20 +25,20 @@ Option KokiriTunicColor = Option::U8("Kokiri Tunic Color", tunicOptions, cosmeti
 Option GoronTunicColor = Option::U8("Goron Tunic Color", tunicOptions, cosmeticDescriptions, OptionCategory::Cosmetic, 1); // Goron Red
 Option ZoraTunicColor = Option::U8("Zora Tunic Color", tunicOptions, cosmeticDescriptions, OptionCategory::Cosmetic, 2); // Zora Blue
 
-Option ChildTunicColor_1  = Option::U8(2, "Child Tunic Color (P2)", childTunicOptions, cosmeticDescriptions, OptionCategory::Cosmetic, SAME_AS_KOKIRI);
-Option KokiriTunicColor_1 = Option::U8(2, "Kokiri Tunic Color (P2)", tunicOptions, cosmeticDescriptions, OptionCategory::Cosmetic, 3); // Kokiri Green
-Option GoronTunicColor_1  = Option::U8(2, "Goron Tunic Color (P2)", tunicOptions, cosmeticDescriptions, OptionCategory::Cosmetic, 4); // Goron Red
-Option ZoraTunicColor_1   = Option::U8(2, "Zora Tunic Color (P2)", tunicOptions, cosmeticDescriptions, OptionCategory::Cosmetic, 5); // Zora Blue
+// Option ChildTunicColor_1  = Option::U8(2, "Child Tunic Color (P2)", childTunicOptions, cosmeticDescriptions, OptionCategory::Cosmetic, SAME_AS_KOKIRI);
+// Option KokiriTunicColor_1 = Option::U8(2, "Kokiri Tunic Color (P2)", tunicOptions, cosmeticDescriptions, OptionCategory::Cosmetic, 3); // Kokiri Green
+// Option GoronTunicColor_1  = Option::U8(2, "Goron Tunic Color (P2)", tunicOptions, cosmeticDescriptions, OptionCategory::Cosmetic, 4); // Goron Red
+// Option ZoraTunicColor_1   = Option::U8(2, "Zora Tunic Color (P2)", tunicOptions, cosmeticDescriptions, OptionCategory::Cosmetic, 5); // Zora Blue
 
 std::string finalChildTunicColor  = ChildTunicColor.GetSelectedOptionText();
 std::string finalKokiriTunicColor = KokiriTunicColor.GetSelectedOptionText();
 std::string finalGoronTunicColor  = GoronTunicColor.GetSelectedOptionText();
 std::string finalZoraTunicColor   = ZoraTunicColor.GetSelectedOptionText();
 
-std::string finalChildTunicColor_1  = ChildTunicColor.GetSelectedOptionText();
-std::string finalKokiriTunicColor_1 = KokiriTunicColor.GetSelectedOptionText();
-std::string finalGoronTunicColor_1  = GoronTunicColor.GetSelectedOptionText();
-std::string finalZoraTunicColor_1   = ZoraTunicColor.GetSelectedOptionText();
+// std::string finalChildTunicColor_1  = ChildTunicColor.GetSelectedOptionText();
+// std::string finalKokiriTunicColor_1 = KokiriTunicColor.GetSelectedOptionText();
+// std::string finalGoronTunicColor_1  = GoronTunicColor.GetSelectedOptionText();
+// std::string finalZoraTunicColor_1   = ZoraTunicColor.GetSelectedOptionText();
 
 std::vector<Option*> cosmeticOptions = {
     &ChildTunicColor, &KokiriTunicColor, &GoronTunicColor, &ZoraTunicColor,

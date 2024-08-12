@@ -21,3 +21,4 @@ build/*
 *.zar
 source/patch_symbols*.hpp
 .DS_Store
+Makefile
