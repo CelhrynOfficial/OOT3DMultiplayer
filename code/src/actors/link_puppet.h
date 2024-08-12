@@ -4,6 +4,9 @@
 #include "z3D/z3D.h"
 #include "multiplayer_ghosts.h"
 
+void UpdateOtherPlayerActors(GlobalContext* globalCtx, u8 otherPlayerIndex);
+void DrawOtherPlayerActors(GlobalContext* globalCtx, u8 otherPlayerIndex);
+
 typedef struct {
     Actor base;
     LinkGhost* ghostPtr;

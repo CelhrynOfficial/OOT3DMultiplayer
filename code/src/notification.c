@@ -92,6 +92,12 @@ void Notification__Update() {
     }
 }
 
+
+
+
+
+
+
 void Notification__Show(const char* emitter, const char* message) {
     memset(NotificationInstance.emitter, 0, sizeof(NotificationInstance.emitter));
     memset(NotificationInstance.message, 0, sizeof(NotificationInstance.message));

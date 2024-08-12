@@ -85,8 +85,8 @@ void EnLinkPuppet_Init(EnLinkPuppet* this, GlobalContext* globalCtx) {
     }
 
     // Collision
-    Collider_InitCylinder(gGlobalContext, &this->collider);
-    Collider_SetCylinder(gGlobalContext, &this->collider, &this->base, &EnLinkPupper_ColliderCylinderInit);
+    Collider_InitCylinder(globalCtx, &this->collider);
+    Collider_SetCylinder(globalCtx, &this->collider, &this->base, &EnLinkPupper_ColliderCylinderInit);
 
     // Shadow
     f32 feetShadowScale = (this->ghostPtr->ghostData.age == 0) ? 90.0f : 60.0f;
@@ -136,7 +136,7 @@ void EnLinkPuppet_UpdateTunicColor(EnLinkPuppet* this, GlobalContext* globalCtx)
 
 void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
     if (!this->ghostPtr->inUse || !this->ghostPtr->isInGame ||
-        this->ghostPtr->ghostData.currentScene != gGlobalContext->sceneNum) {
+        this->ghostPtr->ghostData.currentScene != globalCtx->sceneNum) {
         Actor_Kill(&this->base);
         return;
     }
@@ -170,12 +170,12 @@ void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
 
     // Collider
     Collider_UpdateCylinder(&this->base, &this->collider);
-    CollisionCheck_SetOC(gGlobalContext, &gGlobalContext->colChkCtx, &this->collider);
-    CollisionCheck_SetAC(gGlobalContext, &gGlobalContext->colChkCtx, &this->collider);
+    CollisionCheck_SetOC(globalCtx, &globalCtx->colChkCtx, &this->collider);
+    CollisionCheck_SetAC(globalCtx, &globalCtx->colChkCtx, &this->collider);
 
     // Shadow
     f32 ceilingCheckHeight = (this->ghostPtr->ghostData.age == 0) ? 56.0f : 40.0f;
-    Actor_UpdateBgCheckInfo(gGlobalContext, (Actor*)this, 26.0f, 6.0f, ceilingCheckHeight, 7);
+    Actor_UpdateBgCheckInfo(globalCtx, (Actor*)this, 26.0f, 6.0f, ceilingCheckHeight, 7);
 
     // Child Y position workaround
     if (this->ghostPtr->ghostData.age != 0) {
@@ -184,6 +184,9 @@ void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
 
     // Tunic Color
     EnLinkPuppet_UpdateTunicColor(this, globalCtx);
+
+    // Update other player actors
+    UpdateOtherPlayerActors(globalCtx, this->ghostPtr->otherPlayerIndex);
 }
 
 #define Vec3f_PlayerFeet_unk ((Vec3f*)GAME_ADDR(0x53CACC))
@@ -201,7 +204,7 @@ typedef void (*SkelAnime_DrawOpa_proc)(SkelAnime* skelAnime, nn_math_MTX34* mode
 void EnLinkPuppet_Draw(EnLinkPuppet* this, GlobalContext* globalCtx) {
     // Check how many Link puppets already exist before this one.
     u8 linkPuppetCount = 0;
-    Actor* firstActor  = gGlobalContext->actorCtx.actorList[EnLinkPuppet_InitVars.type].first;
+    Actor* firstActor  = globalCtx->actorCtx.actorList[EnLinkPuppet_InitVars.type].first;
     
     for (Actor* actor = firstActor; actor != NULL; actor = actor->next) {
         if (actor == &this->base) {
@@ -230,6 +233,29 @@ void EnLinkPuppet_Draw(EnLinkPuppet* this, GlobalContext* globalCtx) {
 
         Vec3f spawnPos = this->base.world.pos;
         spawnPos.y += (this->ghostPtr->ghostData.age == 0) ? 50 : (35 + childOffsetY);
-        EffectSsDeadDb_Spawn(gGlobalContext, &spawnPos, &vecEmpty, &vecEmpty, this->ghostPtr->ghostData.age == 0 ? 100 : 70, -1, 80, 80, 80, 0xFF, envR, envG, envB, 1, 8, 0);
+        EffectSsDeadDb_Spawn(globalCtx, &spawnPos, &vecEmpty, &vecEmpty, this->ghostPtr->ghostData.age == 0 ? 100 : 70, -1, 80, 80, 80, 0xFF, envR, envG, envB, 1, 8, 0);
+        DrawOtherPlayerActors(globalCtx, this->ghostPtr->otherPlayerIndex);
+    }
+}
+
+void UpdateOtherPlayerActors(GlobalContext* globalCtx, u8 otherPlayerIndex) {
+    Actor* actor = globalCtx->actorCtx.actorList[ACTORTYPE_NPC].first;
+
+    while (actor != NULL) {
+        if (actor->params == otherPlayerIndex) {
+            
+        }
+        actor = actor->next;
+    }
+}
+
+void DrawOtherPlayerActors(GlobalContext* globalCtx, u8 otherPlayerIndex) {
+    Actor* actor = globalCtx->actorCtx.actorList[ACTORTYPE_NPC].first;
+
+    while (actor != NULL) {
+        if (actor->params == otherPlayerIndex) {
+            
+        }
+        actor = actor->next;
     }
 }

@@ -38,6 +38,7 @@ typedef struct {
     u16 networkID;
     u8 isInGame;
     GhostData ghostData;
+    u8 otherPlayerIndex;
 } LinkGhost;
 
 void Multiplayer_Ghosts_Tick(void);
