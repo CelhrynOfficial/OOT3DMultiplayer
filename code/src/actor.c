@@ -76,7 +76,6 @@
 typedef void (*TitleCard_Update_proc)(GlobalContext* globalCtx, TitleCardContext* titleCtx);
 #define TitleCard_Update ((TitleCard_Update_proc)GAME_ADDR(0x47953C))
 
-
 void Actor_Init() {
     gActorOverlayTable[0x0].initInfo->init    = PlayerActor_rInit;
     gActorOverlayTable[0x0].initInfo->update  = PlayerActor_rUpdate;
@@ -149,7 +148,7 @@ void Actor_Init() {
     gActorOverlayTable[0xE0].initInfo->update = EnAnubice_rUpdate;
 
     gActorOverlayTable[0xE6].initInfo->init = BgBdanSwitch_rInit;
-    
+
     gActorOverlayTable[0xE7].initInfo->init = EnMa1_rInit;
 
     gActorOverlayTable[0xF1].initInfo->init    = ItemOcarina_rInit;
@@ -431,7 +430,8 @@ void HyperActors_Main(Actor* thisx, GlobalContext* globalCtx) {
     }
 }
 
-// void Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
+// void Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ,
+// s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
 // }
 
 void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
@@ -456,10 +456,41 @@ void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
 #include "multiplayer.h"
 #include "notification.h"
 
-extern void ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately);
+extern Actor* ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY,
+                             float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately);
 
-void Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
-    if (actorId == 0x01AF) {
+#include "objects.h"
+
+void Sheik_SpawnTest(float x, float y, float z) {
+    if (!IsInGame() || !gSettingsContext.sheikHints) {
+        return;
+    }
+
+    if (Actor_Find(&gGlobalContext->actorCtx, 0x48, ACTORTYPE_NPC)) {}
+
+    if (Object_GetIndex(&gGlobalContext->objectCtx, 0x8A) < 0) {
+        Object_Spawn(&gGlobalContext->objectCtx, 0x8A);
+    }
+
+    if (!Object_IsLoaded(&gGlobalContext->objectCtx, Object_GetIndex(&gGlobalContext->objectCtx, 0x8A))) {}
+
+    Vec3f pos;
+    Vec3s rot;
+
+    EnXc* sheik = (EnXc*)Actor_Spawn(&gGlobalContext->actorCtx, gGlobalContext, 0x48, //
+                                     x, y, z,                                         //
+                                     rot.x, rot.y, rot.z,                             //
+                                     100, FALSE);
+    if (sheik == (void*)0) {
+        return;
+    }
+
+    sheik->action    = 0x4F;
+    sheik->draw_mode = 1;
+}
+
+Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
+    if (actorId == 0x016D) {
         PosRot posRot;
 
         posRot.pos.x = posX;
@@ -470,17 +501,22 @@ void Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId,
         posRot.rot.y = rotY;
         posRot.rot.z = rotZ;
 
+        // Multiplayer_Send_ActorSpawn(actorId, posRot, params);
         // actorId = 0x004B;
 
-        Notification__Show("WOLFOS", "0x%04X", actorId);
-        // Multiplayer_Send_ActorSpawn(actorId, posRot, params);
+        Notification__Show("Mido", "0x%04X", actorId);
 
-        // ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+        Actor* actor = Actor_Spawn(&gGlobalContext->actorCtx, gGlobalContext, 0x20, posX + 5, posY, posZ, rotX, rotY, rotZ, 2, FALSE);
 
-        return;
+        // actor->action    = 0x4F;
+        // actor->draw_mode = 1;
+
+        // return (Actor*)actor;
+
+        // Sheik_SpawnTest(posX+2, posY, posZ);
     }
 
-    ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+    return ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
 }
 
 void Actor_rDraw(Actor* actor, GlobalContext* globalCtx) {
