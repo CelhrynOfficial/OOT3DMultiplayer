@@ -11,69 +11,97 @@
 #define NOTIF_WIDTH 150
 #define NOTIF_HEIGHT 70
 #define NOTIF_ANIM_SPEED 25
-#define NOTIF_DISPLAY_TIME 5
+#define NOTIF_DISPLAY_FRAMES 60
 
 extern u32 rGameplayFrames;
 
+typedef enum {
+    ENTER,
+    DISPLAY,
+    EXIT
+} NotificationState;
+
 typedef struct {
-    u8 isDisplaying;
+    NotificationState state;
     u32 x;
     u32 y;
     u64 startTime;
+    u64 displayStartTime;
     char emitter[64];
     char message[128];
+    u8 isActive;
 } Notification;
 
-static Notification NotificationInstance = {0, SCREEN_TOP_WIDTH, 10, 0, "N/A", "N/A"};
+static Notification NotificationInstance = { 0, SCREEN_TOP_WIDTH, 10, 0, 0, "N/A", "N/A" };
 
 void Notification__Init() {
-    NotificationInstance.isDisplaying = 0;
+    NotificationInstance.state            = ENTER;
+    NotificationInstance.x                = SCREEN_TOP_WIDTH;
+    NotificationInstance.y                = 10;
+    NotificationInstance.startTime        = 0;
+    NotificationInstance.displayStartTime = 0;
+
+    memset(NotificationInstance.emitter, 0, sizeof(NotificationInstance.emitter));
+    memset(NotificationInstance.message, 0, sizeof(NotificationInstance.message));
+
+    NotificationInstance.isActive = 0;
 }
 
 void Notification__Draw() {
-    if (!NotificationInstance.isDisplaying) {
+    if (!NotificationInstance.isActive) {
         return;
     }
 
-    // Draw_ClearBackbuffer();
-
     Draw_DrawRectTop(NotificationInstance.x, NotificationInstance.y, NOTIF_WIDTH, NOTIF_HEIGHT, COLOR_BLACK);
-
     Draw_DrawStringTop(NotificationInstance.x + 10, NotificationInstance.y + 10, COLOR_BLUE, NotificationInstance.emitter);
     Draw_DrawStringTop(NotificationInstance.x + 10, NotificationInstance.y + 30, COLOR_WHITE, NotificationInstance.message);
-
-    // Draw_CopyBackBuffer();
 }
 
 void Notification__Update() {
-    if (!NotificationInstance.isDisplaying) {
+    u64 currentTime = rGameplayFrames;
+
+    if (!NotificationInstance.isActive) {
         return;
     }
 
-    u64 currentTime = rGameplayFrames;
-    double elapsedTime = (double) (currentTime - NotificationInstance.startTime) / 60;
+    switch (NotificationInstance.state) {
+        case ENTER:
+            if (NotificationInstance.x > SCREEN_TOP_WIDTH - NOTIF_WIDTH) {
+                NotificationInstance.x -= NOTIF_ANIM_SPEED;
+            } else {
+                NotificationInstance.x                = SCREEN_TOP_WIDTH - NOTIF_WIDTH;
+                NotificationInstance.state            = DISPLAY;
+                NotificationInstance.displayStartTime = currentTime;
+            }
+            break;
 
-    if (NotificationInstance.x > SCREEN_TOP_WIDTH - NOTIF_WIDTH) {
-        NotificationInstance.x -= NOTIF_ANIM_SPEED;
-    }
-    else if (elapsedTime < NOTIF_DISPLAY_TIME) {
-    }
-    else if (NotificationInstance.x < SCREEN_TOP_WIDTH) {
-        NotificationInstance.x += NOTIF_ANIM_SPEED;
-    }
-    else {
-        NotificationInstance.isDisplaying = 0;
+        case DISPLAY:
+            if ((currentTime - NotificationInstance.displayStartTime) >= NOTIF_DISPLAY_FRAMES) {
+                NotificationInstance.state = EXIT;
+            }
+            break;
+
+        case EXIT:
+            if (NotificationInstance.x <= SCREEN_TOP_WIDTH) {
+                NotificationInstance.x += NOTIF_ANIM_SPEED;
+            } else {
+                NotificationInstance.x        = SCREEN_TOP_WIDTH;
+                NotificationInstance.isActive = 0;
+            }
+            break;
     }
 }
 
 void Notification__Show(const char* emitter, const char* message) {
-    memset(NotificationInstance.emitter, 0, 64);
-    memset(NotificationInstance.message, 0, 128);
+    memset(NotificationInstance.emitter, 0, sizeof(NotificationInstance.emitter));
+    memset(NotificationInstance.message, 0, sizeof(NotificationInstance.message));
 
     strncpy(NotificationInstance.emitter, emitter, sizeof(NotificationInstance.emitter) - 1);
     strncpy(NotificationInstance.message, message, sizeof(NotificationInstance.message) - 1);
-    
-    NotificationInstance.startTime = rGameplayFrames;
-    NotificationInstance.isDisplaying = 1;
-    NotificationInstance.x = SCREEN_TOP_WIDTH;
+
+    NotificationInstance.startTime        = rGameplayFrames;
+    NotificationInstance.displayStartTime = rGameplayFrames;
+    NotificationInstance.state            = ENTER;
+    NotificationInstance.x                = SCREEN_TOP_WIDTH;
+    NotificationInstance.isActive         = 1;
 }

@@ -68,12 +68,12 @@ void before_GlobalContext_Update(GlobalContext* globalCtx) {
     ItemEffect_RupeeAmmo(&gSaveContext);
     Triforce_HandleCreditsWarp();
 
-    Notification__Update();
-    Notification__Draw();
-
     if (rInputCtx.cur.a) {
         Notification__Show("Estuko", "!Hello, World");
     }
+
+    Notification__Update();
+    Notification__Draw();
 }
 
 #include "lib/printf.h"
