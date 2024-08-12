@@ -454,27 +454,31 @@ void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
 #include "lib/printf.h"
 
 #include "multiplayer.h"
+#include "notification.h"
 
 extern void ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately);
 
 void Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
-    
-    // if (actorId == 0x016D) {
-    //     PosRot posRot;
+    if (actorId == 0x01AF) {
+        PosRot posRot;
 
-    //     posRot.pos.x = posX;
-    //     posRot.pos.y = posY;
-    //     posRot.pos.z = posZ;
+        posRot.pos.x = posX;
+        posRot.pos.y = posY;
+        posRot.pos.z = posZ;
 
-    //     posRot.rot.x = rotX;
-    //     posRot.rot.y = rotY;
-    //     posRot.rot.z = rotZ;
+        posRot.rot.x = rotX;
+        posRot.rot.y = rotY;
+        posRot.rot.z = rotZ;
 
-    //     Multiplayer_Send_ActorSpawn(actorId, posRot, params);
+        // actorId = 0x004B;
 
-    //     // ActorSpawnOrig(actorCtx, globalCtx, 0x004C, posX, posY, posZ, rotX, rotY, rotZ, 0, initImmediately);
-    //     // return;
-    // }
+        Notification__Show("WOLFOS", "0x%04X", actorId);
+        // Multiplayer_Send_ActorSpawn(actorId, posRot, params);
+
+        // ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+
+        return;
+    }
 
     ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
 }
