@@ -4,7 +4,6 @@ backup/*
 build/*
 .history
 *.txt
-*.bin
 *.elf
 *.cia
 *.3ds
@@ -18,6 +17,6 @@ build/*
 *.smdh
 *.pyc
 *.ips
-*.zar
 source/patch_symbols*.hpp
 .DS_Store
+Makefile
