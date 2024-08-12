@@ -210,8 +210,7 @@ void Draw_DrawCharacterTop(u32 posX, u32 posY, u32 color, char character) {
         const char charPos = ascii_font[character * 10 + y];
 
         for (u32 x = 6; x >= 1; x--) {
-            const u32 screenPos =
-                (posX * SCREEN_TOP_HEIGHT + (SCREEN_TOP_HEIGHT - y - posY - 1)) + (5 - x) * SCREEN_TOP_HEIGHT;
+            const u32 screenPos = (posX * SCREEN_TOP_HEIGHT + (SCREEN_TOP_HEIGHT - y - posY - 1)) + (5 - x) * SCREEN_TOP_HEIGHT;
             const u32 pixelColor = ((charPos >> x) & 1) ? color : COLOR_BLACK;
 
             fb2[screenPos * 3]     = (pixelColor)&0xFF;
@@ -307,10 +306,10 @@ u32 Draw_DrawStringTop(u32 posX, u32 posY, u32 color, const char* string) {
             default:
                 // Make sure we never get out of the screen
                 if (line_i >= ((SCREEN_TOP_WIDTH)-posX) / SPACING_X) {
-                    posY += SPACING_Y;
-                    line_i = 1; // Little offset so we know the same string continues
-                    if (string[i] == ' ')
-                        break; // Spaces at the start look weird
+                    // posY += SPACING_Y;
+                    // line_i = 1; // Little offset so we know the same string continues
+                    // if (string[i] == ' ')
+                    break; // Spaces at the start look weird
                 }
 
                 Draw_DrawCharacterTop(posX + line_i * SPACING_X, posY, color, string[i]);

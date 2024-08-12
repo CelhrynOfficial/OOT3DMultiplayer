@@ -82,22 +82,30 @@ void Notification__Update() {
             break;
 
         case EXIT:
-            if (NotificationInstance.x <= SCREEN_TOP_WIDTH) {
+            if (NotificationInstance.x < SCREEN_TOP_WIDTH - 40) {
                 NotificationInstance.x += NOTIF_ANIM_SPEED;
             } else {
                 NotificationInstance.x        = SCREEN_TOP_WIDTH;
                 NotificationInstance.isActive = 0;
             }
+            
             break;
     }
 }
 
-void Notification__Show(const char* emitter, const char* message) {
+void Notification__Show(const char* emitter, const char* message, ...) {
+    char buf[0x100];
+    va_list args;
+
+    va_start(args, message);
+    vsnprintf(buf, 0x100, message, args);
+    va_end(args);
+
     memset(NotificationInstance.emitter, 0, sizeof(NotificationInstance.emitter));
     memset(NotificationInstance.message, 0, sizeof(NotificationInstance.message));
 
     strncpy(NotificationInstance.emitter, emitter, sizeof(NotificationInstance.emitter) - 1);
-    strncpy(NotificationInstance.message, message, sizeof(NotificationInstance.message) - 1);
+    strncpy(NotificationInstance.message, buf, sizeof(buf) - 1);
 
     NotificationInstance.startTime        = rGameplayFrames;
     NotificationInstance.displayStartTime = rGameplayFrames;
