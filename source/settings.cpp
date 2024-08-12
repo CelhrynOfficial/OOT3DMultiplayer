@@ -182,16 +182,16 @@ void UpdateCosmetics() {
         ChooseFinalColor(ChildTunicColor, finalChildTunicColor, tunicColors);
     }
 
-    ChooseFinalColor(KokiriTunicColor_1, finalKokiriTunicColor_1, tunicColors);
-    ChooseFinalColor(GoronTunicColor_1, finalGoronTunicColor_1, tunicColors);
-    ChooseFinalColor(ZoraTunicColor_1, finalZoraTunicColor_1, tunicColors);
+    // ChooseFinalColor(KokiriTunicColor_1, finalKokiriTunicColor_1, tunicColors);
+    // ChooseFinalColor(GoronTunicColor_1, finalGoronTunicColor_1, tunicColors);
+    // ChooseFinalColor(ZoraTunicColor_1, finalZoraTunicColor_1, tunicColors);
 
-    if (ChildTunicColor.Is(SAME_AS_KOKIRI)) {
-        finalChildTunicColor_1 = finalKokiriTunicColor_1;
-        ChildTunicColor.SetSelectedIndex(KokiriTunicColor_1.Value<u8>());
-    } else {
-        ChooseFinalColor(ChildTunicColor_1, finalChildTunicColor_1, tunicColors);
-    }
+    // if (ChildTunicColor.Is(SAME_AS_KOKIRI)) {
+    //     finalChildTunicColor_1 = finalKokiriTunicColor_1;
+    //     ChildTunicColor.SetSelectedIndex(KokiriTunicColor_1.Value<u8>());
+    // } else {
+    //     ChooseFinalColor(ChildTunicColor_1, finalChildTunicColor_1, tunicColors);
+    // }
 }
 
 // Set default settings for all settings

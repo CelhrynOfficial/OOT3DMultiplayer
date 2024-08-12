@@ -245,10 +245,10 @@ bool WriteAllPatches() {
     Cosmetics::Color_RGBAf zoraTunicColor   = Cosmetics::HexStrToColorRGBAf(PersonalizationMenu::finalZoraTunicColor);
 
     /* Player */
-    Cosmetics::Color_RGBAf childTunicColor_1  = Cosmetics::HexStrToColorRGBAf(PersonalizationMenu::finalChildTunicColor_1);
-    Cosmetics::Color_RGBAf kokiriTunicColor_1 = Cosmetics::HexStrToColorRGBAf(PersonalizationMenu::finalKokiriTunicColor_1);
-    Cosmetics::Color_RGBAf goronTunicColor_1  = Cosmetics::HexStrToColorRGBAf(PersonalizationMenu::finalGoronTunicColor_1);
-    Cosmetics::Color_RGBAf zoraTunicColor_1   = Cosmetics::HexStrToColorRGBAf(PersonalizationMenu::finalZoraTunicColor_1);
+    // Cosmetics::Color_RGBAf childTunicColor_1  = Cosmetics::HexStrToColorRGBAf(PersonalizationMenu::finalChildTunicColor_1);
+    // Cosmetics::Color_RGBAf kokiriTunicColor_1 = Cosmetics::HexStrToColorRGBAf(PersonalizationMenu::finalKokiriTunicColor_1);
+    // Cosmetics::Color_RGBAf goronTunicColor_1  = Cosmetics::HexStrToColorRGBAf(PersonalizationMenu::finalGoronTunicColor_1);
+    // Cosmetics::Color_RGBAf zoraTunicColor_1   = Cosmetics::HexStrToColorRGBAf(PersonalizationMenu::finalZoraTunicColor_1);
 
     // Delete assets if it exists
     Handle assetsOut;
