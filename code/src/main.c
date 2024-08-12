@@ -19,6 +19,8 @@
 #include "3ds/services/irrst.h"
 #include "3ds/svc.h"
 
+#include "notification.h"
+
 GlobalContext* gGlobalContext = NULL;
 static u8 rRandomizerInit     = 0;
 u32 rGameplayFrames           = 0;
@@ -34,6 +36,8 @@ void Randomizer_Init() {
     ItemOverride_Init();
     extDataInit();
     irrstInit();
+
+    Notification__Init();
 }
 
 #include "gfx.h"
@@ -63,6 +67,13 @@ void before_GlobalContext_Update(GlobalContext* globalCtx) {
     Multiplayer_Run();
     ItemEffect_RupeeAmmo(&gSaveContext);
     Triforce_HandleCreditsWarp();
+
+    Notification__Update();
+    Notification__Draw();
+
+    if (rInputCtx.cur.a) {
+        Notification__Show("Estuko", "!Hello, World");
+    }
 }
 
 #include "lib/printf.h"

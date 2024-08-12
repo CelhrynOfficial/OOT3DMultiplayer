@@ -101,6 +101,7 @@ void Draw_Lock(void);
 void Draw_Unlock(void);
 
 void Draw_DrawIcon(u32 posX, u32 posY, u32 color, Draw_IconType icon);
+void Draw_DrawRectTop(u32 posX, u32 posY, u32 width, u32 height, u32 color);
 void Draw_DrawRect(u32 posX, u32 posY, u32 width, u32 height, u32 color);
 void Draw_DrawCharacter(u32 posX, u32 posY, u32 color, char character);
 u32 Draw_DrawString(u32 posX, u32 posY, u32 color, const char* string);

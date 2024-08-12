@@ -156,6 +156,50 @@ void Draw_DrawCharacter(u32 posX, u32 posY, u32 color, char character) {
     Draw_DrawCharacter_Impl(posX, posY, color, character, ascii_font, FONT_WIDTH, FONT_HEIGHT);
 }
 
+void Draw_DrawRectTop(u32 posX, u32 posY, u32 width, u32 height, u32 color) {
+    if (posX >= SCREEN_TOP_WIDTH) {
+        return;
+    }
+    if (posY >= SCREEN_TOP_HEIGHT) {
+        return;
+    }
+
+    if (posX + width > SCREEN_TOP_WIDTH) {
+        width = SCREEN_TOP_WIDTH - posX;
+    }
+    if (posY + height > SCREEN_TOP_HEIGHT) {
+        height = SCREEN_TOP_HEIGHT - posY;
+    }
+
+    volatile u8* const fb2 = (volatile u8* const)FRAMEBUFFER[2];
+    volatile u8* const fb3 = (volatile u8* const)FRAMEBUFFER[3];
+    volatile u8* const fb4 = (volatile u8* const)FRAMEBUFFER[4];
+    volatile u8* const fb5 = (volatile u8* const)FRAMEBUFFER[5];
+
+    for (u32 y = 0; y < height; y++) {
+        const u32 screenPosY = (posX * SCREEN_TOP_HEIGHT) + (SCREEN_TOP_HEIGHT - y - posY - 1);
+        for (u32 x = 0; x < width; x++) {
+            const u32 screenPos = (screenPosY + x * SCREEN_TOP_HEIGHT) * 3;
+
+            fb2[screenPos]     = (color)&0xFF;
+            fb2[screenPos + 1] = (color >> 8) & 0xFF;
+            fb2[screenPos + 2] = (color >> 16) & 0xFF;
+
+            fb3[screenPos]     = (color)&0xFF;
+            fb3[screenPos + 1] = (color >> 8) & 0xFF;
+            fb3[screenPos + 2] = (color >> 16) & 0xFF;
+
+            fb4[screenPos]     = (color)&0xFF;
+            fb4[screenPos + 1] = (color >> 8) & 0xFF;
+            fb4[screenPos + 2] = (color >> 16) & 0xFF;
+
+            fb5[screenPos]     = (color)&0xFF;
+            fb5[screenPos + 1] = (color >> 8) & 0xFF;
+            fb5[screenPos + 2] = (color >> 16) & 0xFF;
+        }
+    }
+}
+
 void Draw_DrawCharacterTop(u32 posX, u32 posY, u32 color, char character) {
     volatile u8* const fb2 = (volatile u8* const)FRAMEBUFFER[2];
     volatile u8* const fb3 = (volatile u8* const)FRAMEBUFFER[3];
