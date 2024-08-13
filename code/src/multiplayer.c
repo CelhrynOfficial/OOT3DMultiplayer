@@ -2395,6 +2395,17 @@ void Multiplayer_Receive_ActorUpdate(u16 senderID) {
                 case 0x9C: // Royal Grave
                     BgSpot02Objects_ExplodeGrave((BgSpot02Objects*)actor);
                     break;
+
+                case 0x16D: // Mido
+                {
+                    Vec3f newPos;
+                    memcpy(&newPos, &mBuffer[memSpacer], sizeof(Vec3f));
+                    actor->world.pos = newPos;
+                    actor->home.pos  = newPos;
+                    break;
+                }
+
+
                 case 0xFF: // Pushblocks
                 {
                     Vec3f newPos;

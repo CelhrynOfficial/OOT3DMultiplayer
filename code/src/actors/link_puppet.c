@@ -12,9 +12,9 @@
 
 ActorInit EnLinkPuppet_InitVars = {
     0x1,                             // ID
-    ACTORTYPE_NPC,                   // Type
+    ACTORTYPE_ENEMY,                   // Type
     0xFF,                            // Room
-    0x2000410,                       // Flags
+    0x2000410 | 0x00000001 | 0x04000000,                       // Flags
     21,                              // Object ID (20: Adult, 21: Child)
     sizeof(EnLinkPuppet),            //
     (ActorFunc)EnLinkPuppet_Init,    //
@@ -143,11 +143,17 @@ void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
 
     this->base.world.pos = this->ghostPtr->ghostData.position;
     this->base.shape.rot = this->ghostPtr->ghostData.rotation;
+
+    // Assurez-vous de mettre à jour le Collider avec la nouvelle position
+    Collider_UpdateCylinder(&this->base, &this->collider);
     
+    // Synchroniser la position du focus avec la position du Puppet
+    Actor_SetFocus(&this->base, 50.0f);  // La hauteur du focus peut être ajustée en fonction du modèle
+
     // Overwrite prevPos so model doesn't get stuck to terrain because of Actor_UpdateBgCheckInfo
     this->base.prevPos = this->base.world.pos;
 
-    // Mesh Groups
+    // Mise à jour des groupes de Mesh (inchangé)
     for (size_t index = 0; index < BIT_COUNT(this->ghostPtr->ghostData.meshGroups1); index++) {
         if (this->ghostPtr->ghostData.meshGroups1 & (0b1 << index)) {
             Model_EnableMeshGroupByIndex(this->skelAnime.unk_28, index);
@@ -164,11 +170,10 @@ void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
         }
     }
 
-    
     // Tunic
     this->skelAnime.unk_28->unk_0C->curFrame = this->ghostPtr->ghostData.currentTunic;
 
-    // Collider
+    // Collider (mettre à jour la position)
     Collider_UpdateCylinder(&this->base, &this->collider);
     CollisionCheck_SetOC(globalCtx, &globalCtx->colChkCtx, &this->collider);
     CollisionCheck_SetAC(globalCtx, &globalCtx->colChkCtx, &this->collider);
@@ -188,6 +193,7 @@ void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
     // Update other player actors
     UpdateOtherPlayerActors(globalCtx, this->ghostPtr->otherPlayerIndex);
 }
+
 
 #define Vec3f_PlayerFeet_unk ((Vec3f*)GAME_ADDR(0x53CACC))
 void EnLinkPuppet_PostLimbDraw(GlobalContext* globalCtx, s32 limbIndex, nn_math_MTX34* mtx, EnLinkPuppet* this) {
