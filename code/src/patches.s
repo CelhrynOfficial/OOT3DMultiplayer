@@ -320,13 +320,6 @@ ChestGetIceTrapObjectStatus_patch:
 ExtendedObjectClear_patch:
     bl ExtendedObject_Clear
 
-.section .patch_SariasGift
-.global SariasGift_patch
-SariasGift_patch:
-    bl ItemOverride_GiveSariasGift
-    nop
-    nop
-
 .section .patch_DekuTheaterSkullMask
 .global DekuTheaterSkullMask_patch
 DekuTheaterSkullMask_patch:
@@ -380,13 +373,6 @@ SerenadeCheckChestFlag_patch:
 SerenadeLocation_patch:
     bl Cutscene_OverrideSerenade
     b 0x2B25A8
-
-.section .patch_RequiemLocation
-.global RequiemLocation_patch
-RequiemLocation_patch:
-    nop
-    nop
-    bl Cutscene_OverrideRequiem
 
 .section .patch_NocturneLocation
 .global NocturneLocation_patch
@@ -678,11 +664,6 @@ ISGCrouchStab_patch:
 ApplyDamageMultiplier_patch:
     bl hook_ApplyDamageMultiplier
 
-.section .patch_SceneInitAfterCopyScenes
-.global SceneInitAfterCopyScenes_patch
-SceneInitAfterCopyScenes_patch:
-    b hook_SceneInitAfterCopyScenes
-
 .section .patch_StoreChildBButtonEquip
 .global StoreChildBButtonEquip_patch
 StoreChildBButtonEquip_patch:
@@ -968,11 +949,6 @@ BombPurchaseableCheck_patch:
 BombchuShopInfinitePurchases_patch:
     b hook_BombchuShopInfinitePurchases
 
-.section .patch_GanonBattleDeathWarp
-.global GanonBattleDeathWarp_patch
-GanonBattleDeathWarp_patch:
-    bl Entrance_DeathInGanonBattle
-
 .section .patch_SlidingDoorDestroyCustomModels
 .global SlidingDoorDestroyCustomModels_patch
 SlidingDoorDestroyCustomModels_patch:
@@ -1174,11 +1150,6 @@ OwlMagicCheck_patch:
 ChestIceSmoke_patch:
     b hook_Chest_OverrideIceSmoke
 
-.section .patch_EnableFW
-.global EnableFW_patch
-EnableFW_patch:
-    bl hook_EnableFW
-
 .section .patch_FWKeepWarpPoint
 .global FWKeepWarpPoint_patch
 FWKeepWarpPoint_patch:
@@ -1193,26 +1164,6 @@ FWLoadSet_patch:
 .global FWGetSet_patch
 FWGetSet_patch:
     b hook_FWGetSet
-
-.section .patch_SetSavewarpEntrance
-.global SetSavewarpEntrance_patch
-SetSavewarpEntrance_patch:
-    bl hook_SetSavewarpEntrance
-.if _EUR_==1
-    b  0x44FD00
-.else
-    b  0x44FCE0
-.endif
-
-.section .patch_SetGameOverEntrance
-.global SetGameOverEntrance_patch
-SetGameOverEntrance_patch:
-    bl hook_SetGameOverEntrance
-.if _EUR_==1
-    b  0x458EE8
-.else
-    b  0x458EC8
-.endif
 
 .section .patch_SetGameOverRespawnFlag
 .global SetGameOverRespawnFlag_patch
@@ -1562,11 +1513,6 @@ OpenSaveDontSpoilTradeItems_patch:
 EnteredLocation_patch:
     bl hook_EnteredLocation
 
-.section .patch_LostWoodsBridgeMusic
-.global LostWoodsBridgeMusic_patch
-LostWoodsBridgeMusic_patch:
-    bl hook_LostWoodsBridgeMusic
-
 .section .patch_BeforeLoadGame
 .global BeforeLoadGame_patch
 BeforeLoadGame_patch:
@@ -1678,20 +1624,10 @@ ChestMinigame_KeyChestVisibility_patch:
 ChestMinigame_DontOpenChestsOnInit_patch:
     bl hook_ChestMinigame_DontOpenChestsOnInit
 
-.section .patch_GameplayDestroy
-.global GameplayDestroy_patch
-GameplayDestroy_patch:
-    bl hook_GameplayDestroy
-
 .section .patch_SceneExitOverride
 .global SceneExitOverride_patch
 SceneExitOverride_patch:
     bl hook_SceneExitOverride
-
-.section .patch_SceneExitDynamicOverride
-.global SceneExitDynamicOverride_patch
-SceneExitDynamicOverride_patch:
-    bl hook_SceneExitDynamicOverride
 
 .section .patch_OverrideGrottoActorEntrance
 .global OverrideGrottoActorEntrance_patch
@@ -2028,11 +1964,6 @@ CriticalHealthCheckThree_patch:
     nop
     nop
 
-.section .patch_InitSceneMirrorWorld
-.global InitSceneMirrorWorld_patch
-InitSceneMirrorWorld_patch:
-    bl hook_InitSceneMirrorWorld
-
 .section .patch_InitSceneEntranceOverride
 .global InitSceneEntranceOverride_patch
 InitSceneEntranceOverride_patch:
@@ -2042,21 +1973,6 @@ InitSceneEntranceOverride_patch:
 .global CollisionATvsAC_patch
 CollisionATvsAC_patch:
     bl hook_CollisionATvsAC
-
-.section .patch_CollisionCheck_SetAC_Once
-.global CollisionCheck_SetAC_Once_patch
-CollisionCheck_SetAC_Once_patch:
-    bl hook_CollisionCheck_SetAll_Once
-
-.section .patch_CollisionCheck_SetAT_Once
-.global CollisionCheck_SetAT_Once_patch
-CollisionCheck_SetAT_Once_patch:
-    bl hook_CollisionCheck_SetAll_Once
-
-.section .patch_CollisionCheck_SetOC_Once
-.global CollisionCheck_SetOC_Once_patch
-CollisionCheck_SetOC_Once_patch:
-    bl hook_CollisionCheck_SetAll_Once
 
 .section .patch_GanonDrawMasterSword
 .global GanonDrawMasterSword_patch

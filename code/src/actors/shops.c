@@ -70,9 +70,6 @@ const u16 shopNumToIndex[8] = { 4, 0, 7, 6, 1, 3, 2, 5 };
 u16 ShopsanityItem_GetIndex(ShopsanityItem* item) {
     // Get scene index
     u16 shopNum = gGlobalContext->sceneNum - SCENE_BAZAAR;
-    if (Entrance_SceneAndSpawnAre(0x2C, 0x00)) { // kak bazaar, index 00B7 in the entrance table
-        shopNum = SHOP_KAKARIKO_BAZAAR;
-    }
     shopNum   = shopNumToIndex[shopNum];              // Transfer to the proper shop index
     u16 index = shopNum * 8 + item->shopItemPosition; // Index first by shop num then by item within shop
     return 4 * ((index / 4) / 2) + index % 4; // Transform index- For more explanation see shops.cpp TransformShopIndex
@@ -87,11 +84,7 @@ void ShopsanityItem_BuyEventFunc(GlobalContext* globalCtx, EnGirlA* item) {
     // Make it so ammo does not sell out
     if (!(ShopsanityItem_IsBombs(id) || ShopsanityItem_IsArrows(id) || ShopsanityItem_IsSeeds(id) ||
           ShopsanityItem_IsBombchus(id) || ShopsanityItem_IsNuts(id) || ShopsanityItem_IsSticks(id))) {
-        if (Entrance_SceneAndSpawnAre(0x2C, 0x00)) { // kak bazaar, index 00B7 in the entrance table
-            gSaveContext.sceneFlags[SCENE_BAZAAR + SHOP_KAKARIKO_BAZAAR].unk |= itemBit;
-        } else {
-            gSaveContext.sceneFlags[gGlobalContext->sceneNum].unk |= itemBit;
-        }
+            
         u16 index = ShopsanityItem_GetIndex(shopItem);
         Multiplayer_Send_ActorUpdate((Actor*)shopItem, &index, sizeof(u16));
     }
@@ -140,19 +133,7 @@ s16 ShopsanityItem_GetPrice(ShopsanityItem* item) {
 s32 Shopsanity_CheckAlreadySold(ShopsanityItem* item) {
     u32 itemBit = 1 << item->shopItemPosition;
 
-    // For Bombchu Shop with vanilla logic, check the base game flags.
-    u32 vanillaSoldOut = (gSettingsContext.logic == LOGIC_VANILLA) && Entrance_SceneAndSpawnAre(0x32, 0x00) &&
-                         (gSaveContext.itemGetInf[0] & (1 << (3 + item->super.actor.params - SI_BOMBCHU_10_1)));
-
-    if (vanillaSoldOut ||
-        (Entrance_SceneAndSpawnAre(0x2C, 0x00) &&
-         gSaveContext.sceneFlags[SCENE_BAZAAR + SHOP_KAKARIKO_BAZAAR].unk & itemBit) ||
-        (!Entrance_SceneAndSpawnAre(0x2C, 0x00) && gSaveContext.sceneFlags[gGlobalContext->sceneNum].unk & itemBit)) {
-        item->super.actor.params = SI_SOLD_OUT;
-        return 1;
-    } else {
-        return 0;
-    }
+    return 0;
 }
 
 void ShopsanityItem_1C4Func(GlobalContext* globalCtx, EnGirlA* item) {
@@ -274,9 +255,6 @@ void ShopsanityItem_Init(Actor* itemx, GlobalContext* globalCtx) {
     item->shopItemPosition = numShopItemsLoaded;
     numShopItemsLoaded++;
     item->getItemId = 0x30 + item->shopItemPosition;
-    if (Entrance_SceneAndSpawnAre(0x2C, 0x00)) {
-        item->getItemId += 8;
-    }
 
     override = ItemOverride_Lookup(&item->super.actor, globalCtx->sceneNum, item->getItemId);
     if ((override.value.all == 0) || Shopsanity_CheckAlreadySold(item)) {

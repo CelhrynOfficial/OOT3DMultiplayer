@@ -93,13 +93,14 @@ void Notification__Update() {
     }
 }
 
+void Notification__Show(const char* emitter, const char* message, ...) {
+    char buf[128];
+    va_list args;
 
+    va_start(args, message);
+    vsnprintf(buf, 128, message, args);
+    va_end(args);
 
-
-
-
-
-void Notification__Show(const char* emitter, const char* message) {
     memset(NotificationInstance.emitter, 0, sizeof(NotificationInstance.emitter));
     memset(NotificationInstance.message, 0, sizeof(NotificationInstance.message));
 
@@ -111,4 +112,6 @@ void Notification__Show(const char* emitter, const char* message) {
     NotificationInstance.state            = ENTER;
     NotificationInstance.x                = SCREEN_TOP_WIDTH;
     NotificationInstance.isActive         = 1;
+
+    // PlaySound(0x100035C);
 }

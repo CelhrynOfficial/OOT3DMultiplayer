@@ -7,12 +7,11 @@
 #include "settings.h"
 #include "common.h"
 
-// Draw at most three extra Links. More can cause graphical issues that persist until game restart.
 #define MAX_PUPPETS_AT_ONCE 2 // set to 2 max puppets to avoid crashes in console
 
 ActorInit EnLinkPuppet_InitVars = {
     0x1,                             // ID
-    ACTORTYPE_ENEMY,                   // Type
+    ACTORTYPE_NPC,                   // Type
     0xFF,                            // Room
     0x2000410 | 0x00000001 | 0x04000000,                       // Flags
     21,                              // Object ID (20: Adult, 21: Child)
@@ -54,8 +53,7 @@ static const f32 childOffsetY = 12.5f;
 void EnLinkPuppet_Init(EnLinkPuppet* this, GlobalContext* globalCtx) {
     this->base.room = -1;
 
-    SkelAnime_InitLink(&this->skelAnime, PLAYER->zarInfo, globalCtx, PLAYER->cmbMan, this->base.unk_178, 0, 9,
-                       this->ghostPtr->ghostData.jointTable, NULL);
+    SkelAnime_InitLink(&this->skelAnime, PLAYER->zarInfo, globalCtx, PLAYER->cmbMan, this->base.unk_178, 0, 9, this->ghostPtr->ghostData.jointTable, NULL);
 
     // Tunic
     void* cmabMan = NULL;
@@ -143,17 +141,11 @@ void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
 
     this->base.world.pos = this->ghostPtr->ghostData.position;
     this->base.shape.rot = this->ghostPtr->ghostData.rotation;
-
-    // Assurez-vous de mettre à jour le Collider avec la nouvelle position
-    Collider_UpdateCylinder(&this->base, &this->collider);
     
-    // Synchroniser la position du focus avec la position du Puppet
-    Actor_SetFocus(&this->base, 50.0f);  // La hauteur du focus peut être ajustée en fonction du modèle
-
     // Overwrite prevPos so model doesn't get stuck to terrain because of Actor_UpdateBgCheckInfo
     this->base.prevPos = this->base.world.pos;
 
-    // Mise à jour des groupes de Mesh (inchangé)
+    // Mesh Groups
     for (size_t index = 0; index < BIT_COUNT(this->ghostPtr->ghostData.meshGroups1); index++) {
         if (this->ghostPtr->ghostData.meshGroups1 & (0b1 << index)) {
             Model_EnableMeshGroupByIndex(this->skelAnime.unk_28, index);
@@ -170,10 +162,11 @@ void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
         }
     }
 
+    
     // Tunic
     this->skelAnime.unk_28->unk_0C->curFrame = this->ghostPtr->ghostData.currentTunic;
 
-    // Collider (mettre à jour la position)
+    // Collider
     Collider_UpdateCylinder(&this->base, &this->collider);
     CollisionCheck_SetOC(globalCtx, &globalCtx->colChkCtx, &this->collider);
     CollisionCheck_SetAC(globalCtx, &globalCtx->colChkCtx, &this->collider);
@@ -194,17 +187,14 @@ void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
     UpdateOtherPlayerActors(globalCtx, this->ghostPtr->otherPlayerIndex);
 }
 
-
 #define Vec3f_PlayerFeet_unk ((Vec3f*)GAME_ADDR(0x53CACC))
 void EnLinkPuppet_PostLimbDraw(GlobalContext* globalCtx, s32 limbIndex, nn_math_MTX34* mtx, EnLinkPuppet* this) {
     if (limbIndex != 0x15) {
-        Actor_SetFeetPos((Actor*)this, mtx, limbIndex, 5, &Vec3f_PlayerFeet_unk[gSaveContext.linkAge], 8,
-                         &Vec3f_PlayerFeet_unk[gSaveContext.linkAge]);
+        Actor_SetFeetPos((Actor*)this, mtx, limbIndex, 5, &Vec3f_PlayerFeet_unk[gSaveContext.linkAge], 8, &Vec3f_PlayerFeet_unk[gSaveContext.linkAge]);
     }
 }
 
-typedef void (*SkelAnime_DrawOpa_proc)(SkelAnime* skelAnime, nn_math_MTX34* modelMtx, void* overrideLimbDraw,
-                                       void* postLimbDraw, Actor* param_5, u32 param_6);
+typedef void (*SkelAnime_DrawOpa_proc)(SkelAnime* skelAnime, nn_math_MTX34* modelMtx, void* overrideLimbDraw, void* postLimbDraw, Actor* param_5, u32 param_6);
 #define SkelAnime_DrawOpa ((SkelAnime_DrawOpa_proc)GAME_ADDR(0x35E240))
 
 void EnLinkPuppet_Draw(EnLinkPuppet* this, GlobalContext* globalCtx) {

@@ -32,7 +32,7 @@ void set_GlobalContext(GlobalContext* globalCtx) {
 void Randomizer_Init() {
     rHeap_Init();
     Actor_Init();
-    Entrance_Init();
+    // Entrance_Init();
     ItemOverride_Init();
     extDataInit();
     irrstInit();
@@ -68,9 +68,9 @@ void before_GlobalContext_Update(GlobalContext* globalCtx) {
     ItemEffect_RupeeAmmo(&gSaveContext);
     Triforce_HandleCreditsWarp();
 
-    if (rInputCtx.cur.a) {
-        Notification__Show("Estuko", "!Hello, World");
-    }
+    // if (rInputCtx.cur.a) {
+    //     Notification__Show("Estuko", "!Hello, World");
+    // }
 
     Notification__Update();
     Notification__Draw();

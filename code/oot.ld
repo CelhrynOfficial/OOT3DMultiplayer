@@ -948,18 +948,6 @@ SECTIONS
 		*(.patch_SetSFX)
 	}
 
-	.patch_CollisionCheck_SetAC_Once 0x376174 : {
-		*(.patch_CollisionCheck_SetAC_Once)
-	}
-
-	.patch_CollisionCheck_SetAT_Once 0x3761FC : {
-		*(.patch_CollisionCheck_SetAT_Once)
-	}
-
-	.patch_CollisionCheck_SetOC_Once 0x3762B0 : {
-		*(.patch_CollisionCheck_SetOC_Once)
-	}
-
 	.patch_GKSetDurability 0x376BDC : {
 		*(.patch_GKSetDurability)
 	}
@@ -1304,10 +1292,6 @@ SECTIONS
 
 	.patch_CheckForPocketCuccoHatchGameplayInit 0x448A80 + region_offset : {
 		*(.patch_CheckForPocketCuccoHatchGameplayInit)
-	}
-
-	.patch_InitSceneMirrorWorld 0x4490DC + region_offset : {
-		*(.patch_InitSceneMirrorWorld)
 	}
 
 	.patch_InitSceneEntranceOverride 0x449190 + region_offset : {

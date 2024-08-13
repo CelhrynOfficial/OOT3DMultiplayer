@@ -89,7 +89,7 @@ ifneq ($(BUILD),$(notdir $(CURDIR)))
 
 
 # export OUTPUT	:=	$(CURDIR)/$(TARGET)
-export MY_PATH := /mnt/c/Users/Celhryn/Desktop/Citra/jeux
+export MY_PATH := C:/Users/timot/Documents/Rangement/Emulation/3DS/Games
 
 export OUTPUT	:=	$(MY_PATH)/$(TARGET)
 export TOPDIR	:=	$(CURDIR)
