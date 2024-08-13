@@ -19,8 +19,8 @@ u32 SetSFX(u32 original) {
     // if (original == 0x100050D && gSaveContext.linkAge == 1) {
     //     original = 0x100050B;
     // }
-    u16 sfxID    = original - SFX_BASE;
-    SeqType type = rSfxData.rSeqTypesSFX[sfxID];
+    // u16 sfxID    = original - SFX_BASE;
+    // SeqType type = rSfxData.rSeqTypesSFX[sfxID];
 
      // Send SFX
      if (!mp_duplicateSendProtection) {
