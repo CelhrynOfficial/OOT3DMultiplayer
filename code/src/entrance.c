@@ -388,12 +388,19 @@ s16 Entrance_GetReplacementIndex(s16 index) {
     return index;
 }
 
+#include "multiplayer.h"
+#include "actor.h"
+
 // Allows us to modify information pertaining to a scene just after scene init, but before the entrance is loaded
 void Entrance_OverrideSpawnScene(void) {
     if (!IsInGame()) {
         return;
     }
 
+
+
     EntranceData* entranceData = GetEntranceData(gNextEntranceIndex);
     Notification__Show("Area Change", "Entered area: %s", entranceData->destination);
+    
+    Multiplayer_Send_Location(gNextEntranceIndex);
 }

@@ -336,6 +336,10 @@ extern Actor* ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s
 
 __attribute__((pcs("aapcs-vfp")))
 Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately){
+
+    
+
+
     if (actorId == 0x146) {
         PosRot p;
 

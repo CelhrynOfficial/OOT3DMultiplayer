@@ -13,7 +13,7 @@ ActorInit EnLinkPuppet_InitVars = {
     0x1,                             // ID
     ACTORTYPE_NPC,                   // Type
     0xFF,                            // Room
-    0x2000410 | 0x00000001 | 0x04000000,                       // Flags
+    0x2000410 | 0x04000000,                       // Flags
     21,                              // Object ID (20: Adult, 21: Child)
     sizeof(EnLinkPuppet),            //
     (ActorFunc)EnLinkPuppet_Init,    //
@@ -138,6 +138,8 @@ void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
         Actor_Kill(&this->base);
         return;
     }
+
+    this->location = this->ghostPtr->ghostData.location;
 
     this->base.world.pos = this->ghostPtr->ghostData.position;
     this->base.shape.rot = this->ghostPtr->ghostData.rotation;

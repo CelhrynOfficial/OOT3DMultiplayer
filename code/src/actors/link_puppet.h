@@ -12,6 +12,7 @@ typedef struct {
     LinkGhost* ghostPtr;
     SkelAnime skelAnime;
     ColliderCylinder collider;
+    u32 location;
 } EnLinkPuppet;
 
 extern ActorInit EnLinkPuppet_InitVars;

@@ -18,6 +18,10 @@ void Multiplayer_Sync_Update(void);
 void Multiplayer_ReceivePackets();
 void Multiplayer_OnFileLoad(void);
 
+// sync enemies
+void Multiplayer_Send_Location(u32 location);
+
+
 // Ghost Data
 void Multiplayer_Send_GhostPing(void);
 void Multiplayer_Send_GhostData(void);

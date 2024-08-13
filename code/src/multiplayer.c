@@ -315,6 +315,7 @@ typedef enum {
     PACKET_UNLOCKEDDOOR,
     PACKET_ACTORUPDATE,
     PACKET_ACTORSPAWN,
+    PACKET_LOCATION,
     // Etc
     PACKET_HEALTHCHANGE,
     PACKET_RUPEESCHANGE,
@@ -2515,6 +2516,65 @@ void Multiplayer_Receive_ActorUpdate(u16 senderID) {
     }
 }
 
+
+
+
+void Multiplayer_Send_Location(u32 location) {
+    if (!IsSendReceiveReady() || gSettingsContext.mp_SharedProgress == OFF) {
+        return;
+    }
+
+    memset(mBuffer, 0, mBufSize);
+    
+    u8 memSpacer = PrepareSharedProgressPacket(PACKET_LOCATION);
+
+    mBuffer[memSpacer++] = location;
+
+    Multiplayer_SendPacket(memSpacer, UDS_BROADCAST_NETWORKNODEID);
+}
+
+
+#include "link_puppet.h"
+#include "notification.h"
+
+
+void Multiplayer_Receive_Location(u16 senderID) {
+    // Check if the player is in the same sync group and shared progress is enabled
+    if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
+        return;
+    }
+
+    // Get the memory spacer offset
+    u8 memSpacer = GetSharedProgressMemSpacerOffset();
+
+    // Extract the location from the buffer
+    u32 location = mBuffer[memSpacer++];
+
+    // Get the GhostData pointer associated with the senderID
+    GhostData* ghostDataPtr = Multiplayer_Ghosts_GetGhostData(senderID);
+    if (ghostDataPtr == NULL) {
+        return; // No ghost data found for this sender, exit early
+    }
+
+
+    // Assuming the EnLinkPuppet structure is associated with the ghost
+    // EnLinkPuppet* puppet = &puppet[senderID];;
+
+
+    
+        // Update the puppet's location with the received location
+    
+    ghostDataPtr->location = location;
+
+        // Optionally, perform additional actions like updating the puppet's position
+        // or triggering animations based on the new location
+
+    Notification__Show("Location Received", "Updated puppet's location to: %d", location);
+    
+}
+
+
+
 void Multiplayer_Send_ActorSpawn(s16 actorId, PosRot posRot, s16 params) {
     if (!IsSendReceiveReady() || gSettingsContext.mp_SharedProgress == OFF) {
         return;
@@ -2787,6 +2847,8 @@ static void Multiplayer_UnpackPacket(u16 senderID) {
         Multiplayer_Receive_HealthChange,
         Multiplayer_Receive_RupeeChange,
         Multiplayer_Receive_AmmoChange,
+
+        Multiplayer_Receive_Location,
     };
 
     receive_funcs[identifier](senderID);
