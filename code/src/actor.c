@@ -333,7 +333,7 @@ void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
 #include "notification.h"
 #include "entrance.h"
 #include "multiplayer_ghosts.h"
-#include "uds.h"
+#include "services/uds.c"
 
 extern Actor* ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) __attribute__((pcs("aapcs-vfp")));
 
@@ -349,7 +349,7 @@ Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorI
 
         if (ghostDataPtr != NULL) {
             if (ghostDataPtr->location == GetNextEntranceIndex()) {
-                return;
+                return (Actor*)true;;
             }
         }
     }
