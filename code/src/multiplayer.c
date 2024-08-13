@@ -428,8 +428,10 @@ void Multiplayer_Update(u8 fromGlobalContextUpdate) {
     if (!IsSendReceiveReady()) {
         return;
     }
+
     Multiplayer_ReceivePackets();
     Multiplayer_Ghosts_Tick();
+    
     if (fromGlobalContextUpdate) {
         Multiplayer_Send_GhostData();
         Multiplayer_Send_GhostData_JointTable();
@@ -2400,6 +2402,17 @@ void Multiplayer_Receive_ActorUpdate(u16 senderID) {
                 case 0x9C: // Royal Grave
                     BgSpot02Objects_ExplodeGrave((BgSpot02Objects*)actor);
                     break;
+                case 0x16D: // Mido
+                    Vec3f newPos;
+                    // newPos.x = PLAYER->actor.world.pos.x;
+                    // newPos.y = PLAYER->actor.world.pos.y;
+                    // newPos.z = PLAYER->actor.world.pos.z;
+
+                    memcpy(&newPos, &mBuffer[memSpacer], sizeof(Vec3f));
+                    actor->world.pos = newPos;
+                    actor->home.pos  = newPos;
+                    break;
+
                 case 0xFF: // Pushblocks
                 {
                     Vec3f newPos;

@@ -395,6 +395,5 @@ void Entrance_OverrideSpawnScene(void) {
     }
 
     EntranceData* entranceData = GetEntranceData(gNextEntranceIndex);
-
-    Notification__Show("Area Change", "New area: %d\nName: %s", gGlobalContext->sceneNum, entranceData->destination);
+    Notification__Show("Area Change", "Entered area: %s", entranceData->destination);
 }
