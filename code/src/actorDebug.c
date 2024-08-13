@@ -1,7 +1,9 @@
 #include "z3DDebug/z3D.h"
-#include "actors/player.h"
+#include "actorsDebug/player.h"
 #include "actorsDebug/songs_visual_effects.h"
 #include <string.h>
+
+
 
 void Actor_Init() {
     memcpy(&vanillaActorInit_Player, gActorOverlayTable[0x0].initInfo, sizeof(ActorInit));

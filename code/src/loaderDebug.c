@@ -5,7 +5,7 @@
 
 #include "newcodeinfoDebug.h"
 #include "3dsDebug/types.h"
-#include "loaderDebug.h"
+#include "loader.h"
 
 Result svcOpenProcess(Handle* process, u32 processId);
 Result svcGetProcessId(u32* out, Handle handle);
