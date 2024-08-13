@@ -86,16 +86,6 @@ void Cutscene_OverrideSerenade(void) {
     ItemOverride_PushDelayedOverride(0x22);
 }
 
-u32 Cutscene_OverrideRequiem(void) {
-    if (!EventCheck(0xAC) &&
-        Entrance_SceneAndSpawnAre(0x5C, 0x01)) { // Spirit Temple -> Desert Colossus, index 01E1 in the entrance table
-        ItemOverride_PushDelayedOverride(0x23);
-        EventSet(0xAC);
-        gSaveContext.entranceIndex = 0x1ED;
-    }
-    return 1;
-}
-
 void Cutscene_OverrideNocturne(void) {
     if ((gEntranceTable[gSaveContext.entranceIndex].scene == 0x52) && (gSaveContext.linkAge == AGE_ADULT)) {
         if ((gSaveContext.questItems & 0x1) && (gSaveContext.questItems & 0x2) && (gSaveContext.questItems & 0x4)) {

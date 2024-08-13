@@ -1184,11 +1184,6 @@ void Gfx_Init(void) {
         menu_draw_funcs[PAGE_ITEMTRACKER_ALL]    = NULL;
         menu_draw_funcs[PAGE_ITEMTRACKER_GROUPS] = NULL;
     }
-    InitEntranceTrackingData();
-    if (gEntranceTrackingData.EntranceCount == 0) {
-        menu_draw_funcs[PAGE_ENTRANCETRACKER_ALL]    = NULL;
-        menu_draw_funcs[PAGE_ENTRANCETRACKER_GROUPS] = NULL;
-    }
 
     // Call these to go to the first non-empty group page
     if (gSpoilerData.ItemLocationsCount > 0 && gSpoilerData.GroupItemCounts[currentItemGroup] == 0) {

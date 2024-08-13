@@ -325,14 +325,6 @@ hook_ActorUpdate:
     pop {r0-r12, lr}
     bx lr
 
-.global hook_SceneInitAfterCopyScenes
-hook_SceneInitAfterCopyScenes:
-    push {r0-r12, lr}
-    bl 0x371738
-    bl Scene_Init
-    pop {r0-r12, lr}
-    bx lr
-
 .global hook_StoreChildBButtonEquip
 hook_StoreChildBButtonEquip:
     push {r0-r12, lr}
@@ -623,14 +615,6 @@ hook_Chest_OverrideIceSmoke:
     bne 0x1D5E64
     b 0x1D5E60
 
-.global hook_EnableFW
-hook_EnableFW:
-    push {r0-r12, lr}
-    bl EnableFW
-    pop {r0-r12, lr}
-    add sp,sp,#0x14
-    bx lr
-
 .global hook_FWUnset
 hook_FWUnset:
     push {r0-r12, lr}
@@ -648,20 +632,6 @@ hook_FWGetSet:
     pop {r0-r12, lr}
     beq 0x351A64
     b 0x3519D0
-
-.global hook_SetSavewarpEntrance
-hook_SetSavewarpEntrance:
-    push {r0-r12, lr}
-    bl Entrance_SetSavewarpEntrance
-    pop {r0-r12, lr}
-    bx lr
-
-.global hook_SetGameOverEntrance
-hook_SetGameOverEntrance:
-    push {r0-r12, lr}
-    bl Entrance_SetGameOverEntrance
-    pop {r0-r12, lr}
-    bx lr
 
 .global hook_SetGameOverRespawnFlag
 hook_SetGameOverRespawnFlag:
@@ -1024,14 +994,6 @@ hook_EnteredLocation:
     pop {r0-r12, lr}
     bx lr
 
-.global hook_LostWoodsBridgeMusic
-hook_LostWoodsBridgeMusic:
-    push {r0-r12, lr}
-    bl Entrance_IsLostWoodsBridge
-    cmp r0,#0x1
-    pop {r0-r12, lr}
-    bx lr
-
 .global hook_BeforeLoadGame
 hook_BeforeLoadGame:
     add r0, r4, r5
@@ -1224,14 +1186,6 @@ hook_ChestMinigame_DontOpenChestsOnInit:
     pop {r0-r12, lr}
     bx lr
 
-.global hook_GameplayDestroy
-hook_GameplayDestroy:
-    cpy r4,r0
-    push {r0-r12, lr}
-    bl Entrance_CheckEpona
-    pop {r0-r12, lr}
-    bx lr
-
 .global hook_SceneExitOverride
 hook_SceneExitOverride:
     ldrsh r9, [r1,r0]
@@ -1240,13 +1194,6 @@ hook_SceneExitOverride:
     bl Entrance_OverrideNextIndex
     cpy r9, r0
     pop {r0-r8, r10-r12, lr}
-    bx lr
-
-.global hook_SceneExitDynamicOverride
-hook_SceneExitDynamicOverride:
-    push {r0-r12, lr}
-    bl Entrance_OverrideDynamicExit
-    pop {r0-r12, lr}
     bx lr
 
 .global hook_OverrideGrottoActorEntrance
@@ -1672,14 +1619,6 @@ hook_CriticalHealthCheck:
     movle r0,#0x18
     bx lr
 
-.global hook_InitSceneMirrorWorld
-hook_InitSceneMirrorWorld:
-    push {r0-r12,lr}
-    bl Entrance_UpdateMQFlag
-    pop {r0-r12,lr}
-    cpy r4,r0
-    bx lr
-
 .global hook_InitSceneEntranceOverride
 hook_InitSceneEntranceOverride:
     push {r0-r12,lr}
@@ -1699,16 +1638,6 @@ hook_CollisionATvsAC:
     pop {r0-r12,lr}
     bxeq lr
     b 0x3192E4
-
-.global hook_CollisionCheck_SetAll_Once
-hook_CollisionCheck_SetAll_Once:
-    cpy r5,r2
-    push {r0-r12,lr}
-    bl HyperActors_GetExtraUpdate
-    cmp r0,#0x1
-    pop {r0-r12,lr}
-    addeq lr,#0x8
-    bx lr
 
 .global hook_GanonDrawMasterSword
 hook_GanonDrawMasterSword:

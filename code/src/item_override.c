@@ -554,18 +554,6 @@ void ItemOverride_EditDrawGetItemAfterMatrixUpdate(SkeletonAnimationModel* model
     CustomModels_UpdateMatrix(&model->mtx, rActiveItemObjectId);
 }
 
-s32 ItemOverride_GiveSariasGift(void) {
-    u32 receivedGift = EventCheck(0xC1);
-    if (receivedGift == 0 &&
-        Entrance_SceneAndSpawnAre(0x5B, 0x09)) { // Kokiri Forest -> LW Bridge, index 05E0 in the entrance table
-        ItemOverride_PushDelayedOverride(0x02);
-        EventSet(0xC1);
-    }
-
-    // return 1 to skip the cutscene
-    return 1;
-}
-
 // If we haven't obtained Zelda's Letter and are in the castle courtyard, push it
 void ItemOverride_CheckZeldasLetter() {
     if (EventCheck(0x40) == 0 && gGlobalContext->sceneNum == 0x4A) {

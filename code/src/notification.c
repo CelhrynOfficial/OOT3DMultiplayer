@@ -112,4 +112,6 @@ void Notification__Show(const char* emitter, const char* message, ...) {
     NotificationInstance.state            = ENTER;
     NotificationInstance.x                = SCREEN_TOP_WIDTH;
     NotificationInstance.isActive         = 1;
+
+    // PlaySound(0x100035C);
 }

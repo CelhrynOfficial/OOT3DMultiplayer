@@ -7,14 +7,13 @@
 #include "settings.h"
 #include "common.h"
 
-// Draw at most three extra Links. More can cause graphical issues that persist until game restart.
 #define MAX_PUPPETS_AT_ONCE 2 // set to 2 max puppets to avoid crashes in console
 
 ActorInit EnLinkPuppet_InitVars = {
     0x1,                             // ID
     ACTORTYPE_NPC,                   // Type
     0xFF,                            // Room
-    0x2000410,                       // Flags
+    0x2000410 | 0x00000001 | 0x04000000,                       // Flags
     21,                              // Object ID (20: Adult, 21: Child)
     sizeof(EnLinkPuppet),            //
     (ActorFunc)EnLinkPuppet_Init,    //
@@ -54,8 +53,7 @@ static const f32 childOffsetY = 12.5f;
 void EnLinkPuppet_Init(EnLinkPuppet* this, GlobalContext* globalCtx) {
     this->base.room = -1;
 
-    SkelAnime_InitLink(&this->skelAnime, PLAYER->zarInfo, globalCtx, PLAYER->cmbMan, this->base.unk_178, 0, 9,
-                       this->ghostPtr->ghostData.jointTable, NULL);
+    SkelAnime_InitLink(&this->skelAnime, PLAYER->zarInfo, globalCtx, PLAYER->cmbMan, this->base.unk_178, 0, 9, this->ghostPtr->ghostData.jointTable, NULL);
 
     // Tunic
     void* cmabMan = NULL;
@@ -192,13 +190,11 @@ void EnLinkPuppet_Update(EnLinkPuppet* this, GlobalContext* globalCtx) {
 #define Vec3f_PlayerFeet_unk ((Vec3f*)GAME_ADDR(0x53CACC))
 void EnLinkPuppet_PostLimbDraw(GlobalContext* globalCtx, s32 limbIndex, nn_math_MTX34* mtx, EnLinkPuppet* this) {
     if (limbIndex != 0x15) {
-        Actor_SetFeetPos((Actor*)this, mtx, limbIndex, 5, &Vec3f_PlayerFeet_unk[gSaveContext.linkAge], 8,
-                         &Vec3f_PlayerFeet_unk[gSaveContext.linkAge]);
+        Actor_SetFeetPos((Actor*)this, mtx, limbIndex, 5, &Vec3f_PlayerFeet_unk[gSaveContext.linkAge], 8, &Vec3f_PlayerFeet_unk[gSaveContext.linkAge]);
     }
 }
 
-typedef void (*SkelAnime_DrawOpa_proc)(SkelAnime* skelAnime, nn_math_MTX34* modelMtx, void* overrideLimbDraw,
-                                       void* postLimbDraw, Actor* param_5, u32 param_6);
+typedef void (*SkelAnime_DrawOpa_proc)(SkelAnime* skelAnime, nn_math_MTX34* modelMtx, void* overrideLimbDraw, void* postLimbDraw, Actor* param_5, u32 param_6);
 #define SkelAnime_DrawOpa ((SkelAnime_DrawOpa_proc)GAME_ADDR(0x35E240))
 
 void EnLinkPuppet_Draw(EnLinkPuppet* this, GlobalContext* globalCtx) {

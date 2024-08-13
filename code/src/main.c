@@ -32,7 +32,7 @@ void set_GlobalContext(GlobalContext* globalCtx) {
 void Randomizer_Init() {
     rHeap_Init();
     Actor_Init();
-    Entrance_Init();
+    // Entrance_Init();
     ItemOverride_Init();
     extDataInit();
     irrstInit();

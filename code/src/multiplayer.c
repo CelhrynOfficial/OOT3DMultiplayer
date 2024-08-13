@@ -2337,6 +2337,7 @@ void Multiplayer_Receive_ActorUpdate(u16 senderID) {
     if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
         return;
     }
+
     u8 memSpacer = GetSharedProgressMemSpacerOffset();
 
     s16 sceneNum = mBuffer[memSpacer++];
@@ -2349,6 +2350,7 @@ void Multiplayer_Receive_ActorUpdate(u16 senderID) {
     s16 actorId     = mBuffer[memSpacer++];
     u8 actorType    = mBuffer[memSpacer++];
     s16 actorParams = mBuffer[memSpacer++];
+    
     PosRot actorHome;
     memcpy(&actorHome, &mBuffer[memSpacer], sizeof(PosRot));
     memSpacer += sizeof(PosRot) / 4;
@@ -2358,21 +2360,24 @@ void Multiplayer_Receive_ActorUpdate(u16 senderID) {
         if (actor->id != actorId) {
             continue;
         }
+
         if (actor->params == actorParams) {
             amountWithSameParams++;
+
             if (amountWithSameParams >= 2) {
                 // No need to search for more
                 break;
             }
         }
     }
+
     for (Actor* actor = gGlobalContext->actorCtx.actorList[actorType].first; actor != NULL; actor = actor->next) {
         if (actor->id != actorId) {
             continue;
         }
+
         // If only one actor has the same params, check for that. Otherwise use the home PosRot
-        if ((amountWithSameParams <= 1 && actor->params == actorParams) ||
-            (amountWithSameParams > 1 && (s32)actorHome.pos.x == (s32)actor->home.pos.x &&
+        if ((amountWithSameParams <= 1 && actor->params == actorParams) || (amountWithSameParams > 1 && (s32)actorHome.pos.x == (s32)actor->home.pos.x &&
              actorHome.rot.x == actor->home.rot.x && (s32)actorHome.pos.y == (s32)actor->home.pos.y &&
              actorHome.rot.y == actor->home.rot.y && (s32)actorHome.pos.z == (s32)actor->home.pos.z &&
              actorHome.rot.z == actor->home.rot.z)) {
@@ -2517,6 +2522,7 @@ void Multiplayer_Receive_ActorSpawn(u16 senderID) {
     if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
         return;
     }
+
     u8 memSpacer = GetSharedProgressMemSpacerOffset();
 
     s16 sceneNum = mBuffer[memSpacer++];
@@ -2532,12 +2538,10 @@ void Multiplayer_Receive_ActorSpawn(u16 senderID) {
     memSpacer += sizeof(PosRot) / 4;
     s16 params = mBuffer[memSpacer++];
 
-    Actor_Spawn(&gGlobalContext->actorCtx, gGlobalContext, actorId, rcvdPosRot.pos.x, rcvdPosRot.pos.y,
-                rcvdPosRot.pos.z, rcvdPosRot.rot.x, rcvdPosRot.rot.y, rcvdPosRot.rot.z, params, FALSE);
+    Actor_Spawn(&gGlobalContext->actorCtx, gGlobalContext, actorId, rcvdPosRot.pos.x, rcvdPosRot.pos.y, rcvdPosRot.pos.z, rcvdPosRot.rot.x, rcvdPosRot.rot.y, rcvdPosRot.rot.z, params, FALSE);
 }
 
 // Etc
-
 void Multiplayer_Send_HealthChange(s16 diff) {
     if (!IsSendReceiveReady()) {
         return;

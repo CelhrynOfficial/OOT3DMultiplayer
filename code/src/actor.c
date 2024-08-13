@@ -77,6 +77,8 @@ typedef void (*TitleCard_Update_proc)(GlobalContext* globalCtx, TitleCardContext
 #define TitleCard_Update ((TitleCard_Update_proc)GAME_ADDR(0x47953C))
 
 void Actor_Init() {
+    memcpy(&vanillaActorInit_Player, gActorOverlayTable[0x0].initInfo, sizeof(ActorInit));
+    
     gActorOverlayTable[0x0].initInfo->init    = PlayerActor_rInit;
     gActorOverlayTable[0x0].initInfo->update  = PlayerActor_rUpdate;
     gActorOverlayTable[0x0].initInfo->destroy = PlayerActor_rDestroy;
@@ -309,20 +311,6 @@ void ActorSetup_After(void) {
     Gs_QueueAlternateLocated();
 }
 
-static s32 hyperActors_ExtraUpdate = 0;
-
-s32 HyperActors_GetExtraUpdate(void) {
-    return hyperActors_ExtraUpdate;
-}
-
-void HyperActors_UpdateAgain(Actor* thisx) {
-    if (thisx->colorFilterTimer > 0) {
-        thisx->colorFilterTimer--;
-    }
-    hyperActors_ExtraUpdate = 1;
-    thisx->update(thisx, gGlobalContext);
-    hyperActors_ExtraUpdate = 0;
-}
 
 s32 Actor_IsBoss(Actor* actor) {
     return (actor->id == 0x28) ||                                           // Gohma
@@ -337,219 +325,45 @@ s32 Actor_IsBoss(Actor* actor) {
            (actor->id == 0x17A);                                            // Ganon
 }
 
-void HyperActors_Main(Actor* thisx, GlobalContext* globalCtx) {
-    if (!IsInGame() || thisx->update == NULL || (PLAYER != NULL && Player_InBlockingCsMode(globalCtx, PLAYER))) {
-        return;
-    }
-
-    if (gSettingsContext.hyperBosses == ON) {
-        if (Actor_IsBoss(thisx)) {
-            // Special case to update in order for Barinade and Bongo Bongo
-            if (thisx->id == 0xBA || thisx->id == 0xE9) {
-                for (Actor* actor = gGlobalContext->actorCtx.actorList[ACTORTYPE_BOSS].first; actor != NULL;
-                     actor        = actor->next) {
-                    if (actor == thisx || actor->update == NULL) {
-                        continue;
-                    }
-                    HyperActors_UpdateAgain(actor);
-                }
-            }
-            HyperActors_UpdateAgain(thisx);
-        }
-    }
-
-    if (gSettingsContext.hyperMiddleBosses == ON) {
-        if ((thisx->id == 0x2) ||   // Stalfos
-            (thisx->id == 0x33) ||  // Dark Link
-            (thisx->id == 0x91) ||  // Poe Sisters
-            (thisx->id == 0x99) ||  // Flare Dancer
-            (thisx->id == 0xA3) ||  // Flare Dancer's Fireball
-            (thisx->id == 0xA4) ||  // Dead Hand
-            (thisx->id == 0xA5) ||  // Dead Hand's Hands
-            (thisx->id == 0xAB) ||  // Flare Dancer Core
-            (thisx->id == 0xC6) ||  // Big Octo
-            (thisx->id == 0x113) || // Iron Knuckle
-            (thisx->id == 0x197)) { // Gerudo Fighter
-
-            HyperActors_UpdateAgain(thisx);
-        }
-    }
-
-    if (gSettingsContext.hyperEnemies == ON) {
-        if ((thisx->id == 0xD) ||                            // Poe & Composer Brothers
-            (thisx->id == 0xE) ||                            // Octorok
-            (thisx->id == 0x11) ||                           // Wallmaster
-            (thisx->id == 0x12) ||                           // Dodongo
-            (thisx->id == 0x13) ||                           // Keese
-            (thisx->id == 0x1B) ||                           // Tektite
-            (thisx->id == 0x1C) ||                           // Leever
-            (thisx->id == 0x1D) ||                           // Peahat
-            (thisx->id == 0x25) ||                           // Lizalfos & Dinalfos
-            (thisx->id == 0x2B) ||                           // Gohma Larva
-            (thisx->id == 0x2D) ||                           // Shabom
-            (thisx->id == 0x2F) ||                           // Baby Dodongo
-            (thisx->id == 0x34) ||                           // Biri
-            (thisx->id == 0x35) ||                           // Tailpasaran
-            (thisx->id == 0x37) ||                           // Skulltula
-            (thisx->id == 0x38) ||                           // Torch Slug
-            (thisx->id == 0x3A) ||                           // Stinger (Land)
-            (thisx->id == 0x4B) ||                           // Moblin
-            (thisx->id == 0x54 && thisx->params != 0) ||     // Armos (Enemy)
-            (thisx->id == 0x55) ||                           // Deku Baba
-            (thisx->id == 0x60) ||                           // Mad Scrub
-            (thisx->id == 0x63) ||                           // Bari
-            (thisx->id == 0x69) ||                           // Bubble
-            (thisx->id == 0x6B) ||                           // Flying Floor Tile
-            (thisx->id == 0x8A) ||                           // Beamos
-            (thisx->id == 0x8E) ||                           // Floormaster
-            (thisx->id == 0x90) ||                           // Redead & Gibdo
-            (thisx->id == 0x95) ||                           // Skullwalltula
-            (thisx->id == 0xC5) ||                           // Shell Blade
-            (thisx->id == 0xC7) ||                           // Wilted Deku Baba
-            (thisx->id == 0xDD) ||                           // Like Like
-            (thisx->id == 0xDE) ||                           // Parasitic Tentacle
-            (thisx->id == 0xE0) ||                           // Anubis
-            (thisx->id == 0xE1) ||                           // Anubis Fire
-            (thisx->id == 0xEC) ||                           // Spike Trap
-            (thisx->id == 0x115 && thisx->params == 0x3F) || // Skull Kid (Hostile)
-            (thisx->id == 0x116) ||                          // Skull Kid's Needle
-            (thisx->id == 0x11D) ||                          // Flying Pot
-            (thisx->id == 0x121) ||                          // Freezard
-            (thisx->id == 0x175) ||                          // Big Poe
-            (thisx->id == 0x18C) ||                          // Stinger (Water)
-            (thisx->id == 0x192) ||                          // Deku Scrub (Deku Tree)
-            (thisx->id == 0x193) ||                          // Deku Scrub Projectile
-            (thisx->id == 0x195) ||                          // Business Scrub (Hostile)
-            (thisx->id == 0x1AF) ||                          // Wolfos
-            (thisx->id == 0x1B0) ||                          // Stalchild
-            (thisx->id == 0x1C0) ||                          // Guay
-            (thisx->id == 0x1C1)) {                          // Door Mimic
-
-            HyperActors_UpdateAgain(thisx);
-        }
-    }
-}
-
-// void Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ,
-// s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
-// }
-
 void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
-    u8 tempHammerQuakeFlag = globalCtx->actorCtx.hammerQuakeFlag;
-
-    if (!EnemySouls_CheckSoulForActor(actor)) {
-        globalCtx->actorCtx.hammerQuakeFlag = 0;
-    }
-
     actor->update(actor, globalCtx);
-    HyperActors_Main(actor, globalCtx);
-
-    if (tempHammerQuakeFlag != 0) {
-        globalCtx->actorCtx.hammerQuakeFlag = tempHammerQuakeFlag;
-    }
 }
-
-#include "gfx.h"
-#include "draw.h"
-#include "lib/printf.h"
 
 #include "multiplayer.h"
 #include "notification.h"
 
-extern Actor* ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY,
-                             float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately);
+extern Actor* ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) __attribute__((pcs("aapcs-vfp")));
 
-#include "objects.h"
+__attribute__((pcs("aapcs-vfp")))
+Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately){
+    if (actorId == 0x146) {
+        PosRot p;
 
-void Sheik_SpawnTest(float x, float y, float z) {
-    if (!IsInGame() || !gSettingsContext.sheikHints) {
-        return;
-    }
+        p.pos.x = posX+5;
+        p.pos.y = posY+5;
+        p.pos.z = posZ+5;
 
-    if (Actor_Find(&gGlobalContext->actorCtx, 0x48, ACTORTYPE_NPC)) {}
+        p.rot.x = rotX;
+        p.rot.y = rotY;
+        p.rot.z = rotZ;
 
-    if (Object_GetIndex(&gGlobalContext->objectCtx, 0x8A) < 0) {
-        Object_Spawn(&gGlobalContext->objectCtx, 0x8A);
-    }
+        // Multiplayer_Send_ActorSpawn(actorId, p, params);
 
-    if (!Object_IsLoaded(&gGlobalContext->objectCtx, Object_GetIndex(&gGlobalContext->objectCtx, 0x8A))) {}
+        // actorId = 0xC9;
+        // params = 0;
 
-    Vec3f pos;
-    Vec3s rot;
-
-    EnXc* sheik = (EnXc*)Actor_Spawn(&gGlobalContext->actorCtx, gGlobalContext, 0x48, //
-                                     x, y, z,                                         //
-                                     rot.x, rot.y, rot.z,                             //
-                                     100, FALSE);
-    if (sheik == (void*)0) {
-        return;
-    }
-
-    sheik->action    = 0x4F;
-    sheik->draw_mode = 1;
-}
-
-Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
-    if (actorId == 0x016D) {
-        PosRot posRot;
-
-        posRot.pos.x = posX;
-        posRot.pos.y = posY;
-        posRot.pos.z = posZ;
-
-        posRot.rot.x = rotX;
-        posRot.rot.y = rotY;
-        posRot.rot.z = rotZ;
-
-        // Multiplayer_Send_ActorSpawn(actorId, posRot, params);
         // actorId = 0x004B;
-
-        Notification__Show("Mido", "0x%04X", actorId);
-
-        Actor* actor = Actor_Spawn(&gGlobalContext->actorCtx, gGlobalContext, 0x20, posX + 5, posY, posZ, rotX, rotY, rotZ, 2, FALSE);
-
-        // actor->action    = 0x4F;
-        // actor->draw_mode = 1;
-
-        // return (Actor*)actor;
-
-        // Sheik_SpawnTest(posX+2, posY, posZ);
+        // Notification__Show("BOMB", "0x%04X", actorId);
+        // Actor* mido = ActorSpawnOrig(&gGlobalContext->actorCtx, gGlobalContext, 0x10, p.pos.x, p.pos.y, p.pos.z, p.rot.x, p.rot.y, p.rot.z, 0, FALSE);
+        // Actor* mido = ActorSpawnOrig(&gGlobalContext->actorCtx, gGlobalContext, actorId, posX+1, posY+1, posZ+1, p.rot.x, p.rot.y, p.rot.z, 0, FALSE);
     }
 
-    return ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+    Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+    return actor;
 }
 
 void Actor_rDraw(Actor* actor, GlobalContext* globalCtx) {
-    static Vec3f vecAcc = { 0 };
-    static Vec3f vecVel = { 0 };
-
-    // As a temporary way to mark invulnerable enemies whose soul has not been collected yet,
-    // the model will not be rendered and a flame will take its place.
-    s32 shouldDrawSoulless = !EnemySouls_CheckSoulForActor(actor) &&   // soul not owned;
-                             actor->scale.x != 0 &&                    // if scale is 0, enemy is invisible;
-                             actor->id != 0x11D && actor->id != 0x06B; // flying traps will appear normal.
-    if (shouldDrawSoulless && (PauseContext_GetState() == 0)) {
-        s32 velFrameIdx = (rGameplayFrames % 16);
-        s32 accFrameIdx = (rGameplayFrames % 4);
-        s32 bossMult    = (actor->type == ACTORTYPE_BOSS ? 4 : 1);
-        vecAcc.y        = 0.12f * accFrameIdx * bossMult;
-        vecVel.x        = 0.5f * Math_SinS(0x1000 * velFrameIdx) * bossMult;
-        vecVel.z        = 0.5f * Math_CosS(0x1000 * velFrameIdx) * bossMult;
-        s16 scale       = 150 * bossMult;
-        EffectSsDeadDb_Spawn(globalCtx, &actor->focus.pos, &vecVel, &vecAcc, scale, -1, 0x6E, 0x05, 0xFF, 0xFF, 0x28,
-                             0x00, 0xFF, 1, 8, 0);
-    }
-
-    s32 origSaModelsCount1 = gMainClass->sub180.saModelsCount1;
-    s32 origSaModelsCount2 = gMainClass->sub180.saModelsCount2;
-
     actor->draw(actor, globalCtx);
-
-    if (shouldDrawSoulless) {
-        // make enemy invisible
-        gMainClass->sub180.saModelsCount1 = origSaModelsCount1; // 3D models
-        gMainClass->sub180.saModelsCount2 = origSaModelsCount2; // 2D billboards
-    }
 }
 
 s32 Actor_CollisionATvsAC(Collider* at, Collider* ac) {
