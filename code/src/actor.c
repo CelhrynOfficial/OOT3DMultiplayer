@@ -343,6 +343,8 @@ extern u32 GetNextEntranceIndex();
 __attribute__((pcs("aapcs-vfp")))
 Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately){
 
+    
+
     // Check if there are other players in the same room and scene
     for (u16 i = 0; i < 16; i++) {
         GhostData* ghostDataPtr = Multiplayer_Ghosts_GetGhostData(i);
@@ -354,6 +356,7 @@ Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorI
         }
     }
 
+    Multiplayer_Ghosts_SpawnPuppets();
 
     if (actorId == 0x146) {
         PosRot p;
