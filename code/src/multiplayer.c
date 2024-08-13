@@ -315,11 +315,13 @@ typedef enum {
     PACKET_UNLOCKEDDOOR,
     PACKET_ACTORUPDATE,
     PACKET_ACTORSPAWN,
-    PACKET_LOCATION,
+    
     // Etc
     PACKET_HEALTHCHANGE,
     PACKET_RUPEESCHANGE,
     PACKET_AMMOCHANGE,
+
+    PACKET_LOCATION,
 } PacketIdentifier;
 
 static u8 IsSendReceiveReady(void) {

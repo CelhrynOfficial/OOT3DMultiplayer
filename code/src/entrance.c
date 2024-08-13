@@ -399,8 +399,13 @@ void Entrance_OverrideSpawnScene(void) {
 
 
 
+
     EntranceData* entranceData = GetEntranceData(gNextEntranceIndex);
     Notification__Show("Area Change", "Entered area: %s", entranceData->destination);
     
     Multiplayer_Send_Location(gNextEntranceIndex);
+}
+
+u32 GetNextEntranceIndex() { // Public getter function.
+    return gNextEntranceIndex;
 }
