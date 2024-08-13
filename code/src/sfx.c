@@ -22,13 +22,13 @@ u32 SetSFX(u32 original) {
     // u16 sfxID    = original - SFX_BASE;
     // SeqType type = rSfxData.rSeqTypesSFX[sfxID];
 
-    // // Send SFX
-    // if (!mp_duplicateSendProtection) {
-    //     if (IsInGameOrBossChallenge() && sfxID >= 1258 && sfxID <= 1321) {
-    //         Multiplayer_Send_LinkSFX(original);
-    //     }
-    // }
-    // mp_duplicateSendProtection = false;
+     // Send SFX
+     if (!mp_duplicateSendProtection) {
+         if (IsInGameOrBossChallenge() && sfxID >= 1258 && sfxID <= 1321) {
+             Multiplayer_Send_LinkSFX(original);
+         }
+     }
+     mp_duplicateSendProtection = false;
 
     // static const u16 GET_BOXITEM_ID = 1205; // Treat GET_BOXITEM as a fanfare
     // if (IsInGameOrBossChallenge() && ((!gExtSaveData.option_EnableSFX && sfxID != GET_BOXITEM_ID) ||

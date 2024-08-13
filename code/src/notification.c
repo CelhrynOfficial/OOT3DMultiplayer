@@ -28,7 +28,7 @@ typedef struct {
     u64 startTime;
     u64 displayStartTime;
     char emitter[64];
-    char message[128];
+    char message[255];
     u8 isActive;
 } Notification;
 
@@ -93,13 +93,14 @@ void Notification__Update() {
     }
 }
 
+void Notification__Show(const char* emitter, const char* message, ...) {
+    char buf[0x100];
+    va_list args;
 
+    va_start(args, message);
+    vsnprintf(buf, 0x100, message, args);
+    va_end(args);
 
-
-
-
-
-void Notification__Show(const char* emitter, const char* message) {
     memset(NotificationInstance.emitter, 0, sizeof(NotificationInstance.emitter));
     memset(NotificationInstance.message, 0, sizeof(NotificationInstance.message));
 

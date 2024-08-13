@@ -2498,9 +2498,9 @@ void Multiplayer_Receive_ActorUpdate(u16 senderID) {
 }
 
 void Multiplayer_Send_ActorSpawn(s16 actorId, PosRot posRot, s16 params) {
-    if (!IsSendReceiveReady() || gSettingsContext.mp_SharedProgress == OFF) {
-        return;
-    }
+    // if (!IsSendReceiveReady() || gSettingsContext.mp_SharedProgress == OFF) {
+    //     return;
+    // }
     memset(mBuffer, 0, mBufSize);
     u8 memSpacer = PrepareSharedProgressPacket(PACKET_ACTORSPAWN);
 
@@ -2514,17 +2514,17 @@ void Multiplayer_Send_ActorSpawn(s16 actorId, PosRot posRot, s16 params) {
 }
 
 void Multiplayer_Receive_ActorSpawn(u16 senderID) {
-    if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
-        return;
-    }
+    // if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
+    //     return;
+    // }
     u8 memSpacer = GetSharedProgressMemSpacerOffset();
 
     s16 sceneNum = mBuffer[memSpacer++];
     u8 roomNum   = mBuffer[memSpacer++];
 
-    if (sceneNum != gGlobalContext->sceneNum || roomNum != gGlobalContext->roomNum || !IsInGame()) {
-        return;
-    }
+    // if (sceneNum != gGlobalContext->sceneNum || roomNum != gGlobalContext->roomNum || !IsInGame()) {
+    //     return;
+    // }
 
     s16 actorId = mBuffer[memSpacer++];
     PosRot rcvdPosRot;
