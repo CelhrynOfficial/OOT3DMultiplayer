@@ -363,7 +363,12 @@ Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorI
     }
 
     ActorType actorType = getActorType(actorId);
-    if (ableToSpawnActors && !(actorType == ACTORTYPE_NPC || actorType == ACTORTYPE_ENEMY)) {
+    if (!(actorType == ACTORTYPE_NPC || actorType == ACTORTYPE_ENEMY)) {
+        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+        return actor;
+    }
+
+    if (ableToSpawnActors) {
         Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
         return actor;
     }
