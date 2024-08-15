@@ -356,21 +356,14 @@ Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorI
         p.rot.y = rotY;
         p.rot.z = rotZ;
 
-        if (actorId == 0x10) {
-            Multiplayer_Send_ActorSpawn(actorId, p, params);
-        }
+        Multiplayer_Send_ActorSpawn(actorId, p, params);
 
-        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
-        return actor;
-    }
-
-    if (ableToSpawnActors) {
         Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
         return actor;
     }
 
     ActorType actorType = getActorType(actorId);
-    if (!(actorType == ACTORTYPE_NPC || actorType == ACTORTYPE_ENEMY)) {
+    if (ableToSpawnActors && !(actorType == ACTORTYPE_NPC || actorType == ACTORTYPE_ENEMY)) {
         Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
         return actor;
     }

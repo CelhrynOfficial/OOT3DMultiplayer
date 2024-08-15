@@ -2724,7 +2724,7 @@ bool Multiplayer_DoesSomeoneOwnThisRoom(void) {
 
         u32 puppetLocation = ghost->extraData.location;
 
-        if (puppetLocation == gLinkExtraData.location) {
+        if (puppetLocation == gLinkExtraData.location && ghost->inUse) {
             return true;
         }
     }
