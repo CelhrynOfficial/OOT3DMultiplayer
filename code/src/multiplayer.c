@@ -30,7 +30,7 @@ static s8 netStage              = 0;
 bool mp_isSyncing               = false;
 bool mp_foundSyncer             = false;
 bool mp_completeSyncs[6];
-bool mSaveContextInit = false;
+bool mSaveContextInit  = false;
 bool ableToSpawnActors = false;
 
 // Shared Progress: The ID that this client fullsyncs with
@@ -435,11 +435,11 @@ void Multiplayer_Update(u8 fromGlobalContextUpdate) {
 
     Multiplayer_ReceivePackets();
     Multiplayer_Ghosts_Tick();
-    
+
     if (fromGlobalContextUpdate) {
         Multiplayer_Send_GhostData();
         Multiplayer_Send_GhostData_JointTable();
-        
+
     } else {
         Multiplayer_Send_GhostPing();
     }
@@ -963,6 +963,8 @@ void Multiplayer_Send_GhostData(void) {
     ghostData.childTunicColor.b = gSettingsContext.childTunicColor.b;
     ghostData.childTunicColor.a = gSettingsContext.childTunicColor.a;
 
+    ghostData.puppetID = fullSyncerID;
+
     // memcpy(&ghostData.childTunicColor, &gSettingsContext.childTunicColor, sizeof(ghostData.childTunicColor));
     memcpy(&ghostData.kokiriTunicColor, &gSettingsContext.kokiriTunicColor, sizeof(ghostData.kokiriTunicColor));
     memcpy(&ghostData.goronTunicColor, &gSettingsContext.goronTunicColor, sizeof(ghostData.goronTunicColor));
@@ -978,7 +980,11 @@ void Multiplayer_Send_GhostData(void) {
 void Multiplayer_Receive_GhostData(u16 senderID) {
     GhostData ghostData;
     u32 packetSize = sizeof(GhostData) - sizeof(ghostData.jointTable);
+    u16 memSpacer  = 0;
+
     memcpy(&ghostData, &mBuffer[1], packetSize);
+    memSpacer += packetSize / 4;
+    // u16 puppetID = mBuffer[memSpacer++];
 
     Multiplayer_Ghosts_UpdateGhostData(senderID, &ghostData, TRUE);
 }
@@ -987,6 +993,7 @@ void Multiplayer_Send_GhostData_JointTable(void) {
     if (!IsSendReceiveReady()) {
         return;
     }
+
     memset(mBuffer, 0, mBufSize);
     u16 memSpacer        = 0;
     mBuffer[memSpacer++] = PACKET_GHOSTDATA_JOINTTABLE; // 0: Identifier
@@ -2356,7 +2363,7 @@ void Multiplayer_Receive_ActorUpdate(u16 senderID) {
     s16 actorId     = mBuffer[memSpacer++];
     u8 actorType    = mBuffer[memSpacer++];
     s16 actorParams = mBuffer[memSpacer++];
-    
+
     PosRot actorHome;
     memcpy(&actorHome, &mBuffer[memSpacer], sizeof(PosRot));
     memSpacer += sizeof(PosRot) / 4;
@@ -2383,7 +2390,8 @@ void Multiplayer_Receive_ActorUpdate(u16 senderID) {
         }
 
         // If only one actor has the same params, check for that. Otherwise use the home PosRot
-        if ((amountWithSameParams <= 1 && actor->params == actorParams) || (amountWithSameParams > 1 && (s32)actorHome.pos.x == (s32)actor->home.pos.x &&
+        if ((amountWithSameParams <= 1 && actor->params == actorParams) ||
+            (amountWithSameParams > 1 && (s32)actorHome.pos.x == (s32)actor->home.pos.x &&
              actorHome.rot.x == actor->home.rot.x && (s32)actorHome.pos.y == (s32)actor->home.pos.y &&
              actorHome.rot.y == actor->home.rot.y && (s32)actorHome.pos.z == (s32)actor->home.pos.z &&
              actorHome.rot.z == actor->home.rot.z)) {
@@ -2555,7 +2563,8 @@ void Multiplayer_Receive_ActorSpawn(u16 senderID) {
     memSpacer += sizeof(PosRot) / 4;
     s16 params = mBuffer[memSpacer++];
 
-    Actor_Spawn(&gGlobalContext->actorCtx, gGlobalContext, actorId, rcvdPosRot.pos.x, rcvdPosRot.pos.y, rcvdPosRot.pos.z, rcvdPosRot.rot.x, rcvdPosRot.rot.y, rcvdPosRot.rot.z, params, FALSE);
+    Actor_Spawn(&gGlobalContext->actorCtx, gGlobalContext, actorId, rcvdPosRot.pos.x, rcvdPosRot.pos.y,
+                rcvdPosRot.pos.z, rcvdPosRot.rot.x, rcvdPosRot.rot.y, rcvdPosRot.rot.z, params, FALSE);
 }
 
 // Etc
@@ -2714,13 +2723,8 @@ bool Multiplayer_DoesSomeoneOwnThisRoom(void) {
         LinkGhost* ghost = Multiplayer_Ghosts_GetGhostByIndex(i);
 
         u32 puppetLocation = ghost->extraData.location;
-        u32 puppetScene = ghost->ghostData.currentScene;
 
-        if (ghost->networkID == fullSyncerID) {
-            continue;
-        }
-
-        if (puppetLocation == gLinkExtraData.location || puppetScene == gGlobalContext->sceneNum) {
+        if (puppetLocation == gLinkExtraData.location) {
             return true;
         }
     }
@@ -2749,18 +2753,16 @@ void Multiplayer_Receive_LinkExtraData(u16 senderID) {
 
     u8 memSpacer = GetSharedProgressMemSpacerOffset();
 
-    LinkGhost* linkGhostPtr = Multiplayer_Ghosts_GetGhost(senderID);
-    if (linkGhostPtr == NULL) {
+    LinkGhost* ghost = Multiplayer_Ghosts_GetGhost(senderID);
+    if (ghost == NULL || !ghost->inUse) {
         return;
     }
 
-    if (linkGhostPtr->extraData.responsability == ROOM_OWNER && linkGhostPtr->extraData.location == gLinkExtraData.location) {
+    if (ghost->extraData.responsability == ROOM_OWNER && ghost->extraData.location == gLinkExtraData.location) {}
 
-    }
+    memcpy(&ghost->extraData, &mBuffer[memSpacer], sizeof(LinkExtraData));
 
-    memcpy(&linkGhostPtr->extraData, &mBuffer[memSpacer], sizeof(LinkExtraData));
-    
-    Notification__Show("Location Received", "Updated puppet's location to");   
+    // Notification__Show("Location Received", "Updated puppet's location to");
 }
 
 void Multiplayer_Send_TransferOwnership() {
@@ -2771,21 +2773,22 @@ void Multiplayer_Send_TransferOwnership() {
     memset(mBuffer, 0, mBufSize);
     u8 memSpacer = PrepareSharedProgressPacket(PACKET_TRANSFER_OWNERSHIP);
 
+    u16 puppetID = -1;
+
     for (size_t i = 0; i < ARRAY_SIZE(ghosts); i++) {
         LinkGhost* ghost = Multiplayer_Ghosts_GetGhostByIndex(i);
-        
-        if (ghost == NULL) {
-            continue;
-        }
 
-        if (ghost->networkID == fullSyncerID) {
+        if (ghost == NULL || !ghost->inUse) {
             continue;
         }
 
         if (ghost->extraData.location == gLinkExtraData.location) {
-            mBuffer[memSpacer++] = ghost->networkID;
+            puppetID = ghost->ghostData.puppetID;
+            break;
         }
     }
+
+    mBuffer[memSpacer++] = puppetID;
 
     Multiplayer_SendPacket(memSpacer, UDS_BROADCAST_NETWORKNODEID);
 }
@@ -2796,10 +2799,10 @@ void Multiplayer_Receive_TransferOwnership(u16 senderID) {
     }
 
     u8 memSpacer = GetSharedProgressMemSpacerOffset();
-    
-    u32 networkID = mBuffer[memSpacer++];
 
-    if (networkID == fullSyncerID) {
+    u32 pupppetID = mBuffer[memSpacer++];
+
+    if (pupppetID == fullSyncerID) {
         gLinkExtraData.responsability = ROOM_OWNER;
         Notification__Show("Debug", "Getting ownership");
     }
@@ -2826,6 +2829,7 @@ void Multiplayer_ReceivePackets() {
 
     mp_receivedPackets = 0;
     size_t actual_size = 0;
+    
     do {
         memset(mBuffer, 0, mBufSize);
         u16 src_NetworkNodeID = 0;

@@ -2,8 +2,10 @@
 
 #include "3ds/svc.h"
 #include "multiplayer_ghosts.h"
+#include "multiplayer.h"
 #include "link_puppet.h"
 #include "common.h"
+
 
 #define INACTIVE_TIME_LIMIT (TICKS_PER_SEC * 3)
 

@@ -30,6 +30,8 @@ typedef struct {
     Color_RGBAf goronTunicColor;
     Color_RGBAf zoraTunicColor;
 
+    u16 puppetID;
+
     LimbData jointTable[LINK_LIMB_COUNT]; // ALWAYS KEEP LAST
 } GhostData;
 
