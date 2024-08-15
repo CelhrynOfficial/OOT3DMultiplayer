@@ -332,6 +332,10 @@ void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
 #include "multiplayer.h"
 #include "notification.h"
 
+ActorType getActorType(u16 actorId) {
+    return (ActorType) gActorOverlayTable[actorId].initInfo->type;
+}
+
 extern Actor* ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) __attribute__((pcs("aapcs-vfp")));
 
 __attribute__((pcs("aapcs-vfp")))
@@ -361,6 +365,12 @@ Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorI
     }
 
     if (ableToSpawnActors) {
+        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+        return actor;
+    }
+
+    ActorType actorType = getActorType(actorId);
+    if (!(actorType == ACTORTYPE_NPC || actorType == ACTORTYPE_ENEMY)) {
         Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
         return actor;
     }
