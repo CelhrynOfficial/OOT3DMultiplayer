@@ -335,31 +335,37 @@ void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
 extern Actor* ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) __attribute__((pcs("aapcs-vfp")));
 
 __attribute__((pcs("aapcs-vfp")))
-Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately){
-    if (actorId == 0x146) {
+Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
+    if (!IsInGame() || actorId == 0x0 || actorId == 0x1) {
+        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+        return actor;
+    }
+
+    if (gLinkExtraData.responsability == ROOM_OWNER) {
         PosRot p;
 
-        p.pos.x = posX+5;
-        p.pos.y = posY+5;
-        p.pos.z = posZ+5;
+        p.pos.x = posX;
+        p.pos.y = posY;
+        p.pos.z = posZ;
 
         p.rot.x = rotX;
         p.rot.y = rotY;
         p.rot.z = rotZ;
 
-        // Multiplayer_Send_ActorSpawn(actorId, p, params);
+        if (actorId == 0x10) {
+            Multiplayer_Send_ActorSpawn(actorId, p, params);
+        }
 
-        // actorId = 0xC9;
-        // params = 0;
-
-        // actorId = 0x004B;
-        // Notification__Show("BOMB", "0x%04X", actorId);
-        // Actor* mido = ActorSpawnOrig(&gGlobalContext->actorCtx, gGlobalContext, 0x10, p.pos.x, p.pos.y, p.pos.z, p.rot.x, p.rot.y, p.rot.z, 0, FALSE);
-        // Actor* mido = ActorSpawnOrig(&gGlobalContext->actorCtx, gGlobalContext, actorId, posX+1, posY+1, posZ+1, p.rot.x, p.rot.y, p.rot.z, 0, FALSE);
+        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+        return actor;
     }
 
-    Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
-    return actor;
+    if (ableToSpawnActors) {
+        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+        return actor;
+    }
+
+    return NULL;
 }
 
 void Actor_rDraw(Actor* actor, GlobalContext* globalCtx) {

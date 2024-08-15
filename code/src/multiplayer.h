@@ -4,6 +4,19 @@
 #include "3ds/types.h"
 #include "z3D/z3D.h"
 
+typedef enum {
+    ROOM_CLIENT,
+    ROOM_OWNER
+} Responsability;
+
+typedef struct {
+    u32 location;
+    Responsability responsability;
+} LinkExtraData;
+
+extern bool ableToSpawnActors;
+extern u16 fullSyncerID;
+
 extern u32 mp_receivedPackets;
 extern bool mp_duplicateSendProtection;
 extern bool mp_isSyncing;
@@ -23,6 +36,7 @@ void Multiplayer_Send_GhostPing(void);
 void Multiplayer_Send_GhostData(void);
 void Multiplayer_Send_GhostData_JointTable(void);
 void Multiplayer_Send_LinkSFX(u32 sfxID);
+
 // Shared Progress
 u8 Multiplayer_GetNeededPacketsMask(void);
 void Multiplayer_Send_FullSyncRequest(u8 neededPacketsMask);
@@ -61,9 +75,15 @@ void Multiplayer_Send_UnlockedDoor(u32 flag);
 void Multiplayer_Send_ActorUpdate(Actor* actor, void* extraData, u32 extraDataSize);
 void Multiplayer_Send_EnemySpawn(Actor* actor);
 void Multiplayer_Send_ActorSpawn(s16 actorId, PosRot posRot, s16 params);
+
 // Etc
 void Multiplayer_Send_HealthChange(s16 diff);
 void Multiplayer_Send_RupeeChange(s16 diff);
 void Multiplayer_Send_AmmoChange(u8 index, s8 diff);
+void Multiplayer_Send_LinkExtraData(LinkExtraData* extraData);
+void Multiplayer_Send_TransferOwnership(void);
+
+// Utils
+bool Multiplayer_DoesSomeoneOwnThisRoom(void);
 
 #endif //_MULTIPLAYER_H_

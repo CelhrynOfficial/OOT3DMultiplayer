@@ -18,8 +18,6 @@ EntranceOverride rEntranceOverrides[ENTRANCE_OVERRIDES_MAX_COUNT] = { 0 };
 EntranceOverride destList[ENTRANCE_OVERRIDES_MAX_COUNT]           = { 0 };
 EntranceTrackingData gEntranceTrackingData                        = { 0 };
 
-s16 gNextEntranceIndex = 0;
-
 static const EntranceOverride emptyOverride = { 0 };
 
 u8 EntranceIsNull(EntranceOverride* entranceOverride) {
@@ -27,14 +25,31 @@ u8 EntranceIsNull(EntranceOverride* entranceOverride) {
            entranceOverride->override == 0 && entranceOverride->overrideDestination == 0;
 }
 
+#include "multiplayer.h"
 #include "notification.h"
+#include "player.h"
 
 s16 Entrance_OverrideNextIndex(s16 nextEntranceIndex) {
-    gNextEntranceIndex = nextEntranceIndex;
+    // Before changing
+    if (gLinkExtraData.responsability == ROOM_OWNER) {
+        Multiplayer_Send_TransferOwnership();
+    }
 
-    // EntranceData* entranceData = GetEntranceData(nextEntranceIndex);
+    gLinkExtraData.location = nextEntranceIndex;
 
-    // Notification__Show("Area Change", "New area: %d - %d - \nName: %s", gGlobalContext->sceneNum, nextEntranceIndex, entranceData->destination);
+    if (!Multiplayer_DoesSomeoneOwnThisRoom()) {
+        gLinkExtraData.responsability = ROOM_OWNER;
+        ableToSpawnActors = true;
+
+        Notification__Show("Debug", "Gettig ownership");
+    } else {
+        gLinkExtraData.responsability = ROOM_CLIENT;
+        ableToSpawnActors = false;
+
+        Notification__Show("Debug", "Getting client");
+    }
+
+    Multiplayer_Send_LinkExtraData(&gLinkExtraData);
 
     SaveFile_SetEntranceDiscovered(nextEntranceIndex);
     return nextEntranceIndex;
@@ -44,6 +59,8 @@ void Entrance_EnteredLocation(void) {
     if (!IsInGame()) {
         return;
     }
+
+    ableToSpawnActors = true;
 
     SaveFile_SetSceneDiscovered(gGlobalContext->sceneNum);
 }
@@ -393,7 +410,4 @@ void Entrance_OverrideSpawnScene(void) {
     if (!IsInGame()) {
         return;
     }
-
-    EntranceData* entranceData = GetEntranceData(gNextEntranceIndex);
-    Notification__Show("Area Change", "Entered area: %s", entranceData->destination);
 }
