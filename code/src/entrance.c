@@ -17,11 +17,6 @@ typedef void (*SetNextEntrance_proc)(struct GlobalContext* globalCtx, s16 entran
 EntranceOverride rEntranceOverrides[ENTRANCE_OVERRIDES_MAX_COUNT] = { 0 };
 EntranceOverride destList[ENTRANCE_OVERRIDES_MAX_COUNT]           = { 0 };
 EntranceTrackingData gEntranceTrackingData                        = { 0 };
-<<<<<<< Updated upstream
-
-s16 gNextEntranceIndex = 0;
-=======
->>>>>>> Stashed changes
 
 static const EntranceOverride emptyOverride = { 0 };
 
@@ -30,16 +25,6 @@ u8 EntranceIsNull(EntranceOverride* entranceOverride) {
            entranceOverride->override == 0 && entranceOverride->overrideDestination == 0;
 }
 
-<<<<<<< Updated upstream
-#include "notification.h"
-
-s16 Entrance_OverrideNextIndex(s16 nextEntranceIndex) {
-    gNextEntranceIndex = nextEntranceIndex;
-
-    // EntranceData* entranceData = GetEntranceData(nextEntranceIndex);
-
-    // Notification__Show("Area Change", "New area: %d - %d - \nName: %s", gGlobalContext->sceneNum, nextEntranceIndex, entranceData->destination);
-=======
 #include "multiplayer.h"
 #include "notification.h"
 #include "player.h"
@@ -63,7 +48,6 @@ s16 Entrance_OverrideNextIndex(s16 nextEntranceIndex) {
 
         Notification__Show("Debug", "Getting client");
     }
->>>>>>> Stashed changes
 
     Multiplayer_Send_LinkExtraData(&gLinkExtraData);
 
@@ -76,11 +60,8 @@ void Entrance_EnteredLocation(void) {
         return;
     }
 
-<<<<<<< Updated upstream
-=======
     ableToSpawnActors = true;
 
->>>>>>> Stashed changes
     SaveFile_SetSceneDiscovered(gGlobalContext->sceneNum);
 }
 
@@ -424,30 +405,9 @@ s16 Entrance_GetReplacementIndex(s16 index) {
     return index;
 }
 
-<<<<<<< Updated upstream
-#include "multiplayer.h"
-#include "actor.h"
-
-=======
->>>>>>> Stashed changes
 // Allows us to modify information pertaining to a scene just after scene init, but before the entrance is loaded
 void Entrance_OverrideSpawnScene(void) {
     if (!IsInGame()) {
         return;
     }
-<<<<<<< Updated upstream
-
-
-
-
-    EntranceData* entranceData = GetEntranceData(gNextEntranceIndex);
-    Notification__Show("Area Change", "Entered area: %s", entranceData->destination);
-    
-    Multiplayer_Send_Location(gNextEntranceIndex);
-}
-
-u32 GetNextEntranceIndex() { // Public getter function.
-    return gNextEntranceIndex;
-=======
->>>>>>> Stashed changes
 }

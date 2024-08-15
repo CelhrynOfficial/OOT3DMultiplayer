@@ -7,8 +7,6 @@
 extern ActorInit vanillaActorInit_Player;
 extern LinkExtraData gLinkExtraData;
 
-extern ActorInit vanillaActorInit_Player;
-
 void PlayerActor_rInit(Actor* thisx, GlobalContext* globalCtx);
 void PlayerActor_rUpdate(Actor* thisx, GlobalContext* globalCtx);
 void PlayerActor_rDestroy(Actor* thisx, GlobalContext* globalCtx);

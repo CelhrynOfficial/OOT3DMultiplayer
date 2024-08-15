@@ -16,8 +16,6 @@ typedef struct {
 typedef struct {
     s32 currentScene;
     s32 age;
-
-    u32 location;
     
     Vec3f position;
     Vec3s rotation;
