@@ -128,38 +128,6 @@ void Chest_ChangeAppearance(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void EnBox_rUpdate(Actor* thisx, GlobalContext* globalCtx) {
-
-    if (sBomb != 0 && thisx == sLastTrapChest) {
-        *(((u8*)(sBomb)) + 0x26C) = 2; // bomb timer
-        sBomb                     = 0;
-    }
-
-    if (sFairy != 0 && thisx == sLastTrapChest) {
-        sFairy->innerColor.r = 0; // evil dark fairy
-        sFairy->innerColor.g = 0;
-        sFairy->innerColor.b = 0;
-
-        if (gSaveContext.health <= 16 || gSettingsContext.damageMultiplier == DAMAGEMULTIPLIER_OHKO) {
-            gSaveContext.health = 0;
-        } else if (gSettingsContext.damageMultiplier == DAMAGEMULTIPLIER_HALF) {
-            healthDecrement = 64; // 4 Hearts
-        } else if (gSettingsContext.damageMultiplier == DAMAGEMULTIPLIER_DEFAULT) {
-            healthDecrement = 128; // 8 Hearts
-        } else if (gSettingsContext.damageMultiplier == DAMAGEMULTIPLIER_DOUBLE) {
-            healthDecrement = 256; // 16 Hearts
-        } else if (gSettingsContext.damageMultiplier == DAMAGEMULTIPLIER_QUADRUPLE) {
-            healthDecrement = 512; // 32 Hearts
-        } else {
-            healthDecrement = 640; // 40 Hearts
-        }
-
-        if (gSaveContext.doubleDefense) {
-            healthDecrement /= 2;
-        }
-        PlaySound(0x100035C); // Poe laugh SFX
-        sFairy = 0;
-    }
-
     EnBox_Update(thisx, globalCtx);
 
     // Use correct size for the light effect if it appears

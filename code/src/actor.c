@@ -334,6 +334,7 @@ void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
 #include "entrance.h"
 #include "multiplayer_ghosts.h"
 
+<<<<<<< Updated upstream
 
 extern Actor* ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) __attribute__((pcs("aapcs-vfp")));
 
@@ -392,6 +393,42 @@ Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorI
     // }
 
     
+=======
+extern Actor* ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) __attribute__((pcs("aapcs-vfp")));
+
+__attribute__((pcs("aapcs-vfp")))
+Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
+    if (!IsInGame() || actorId == 0x0 || actorId == 0x1) {
+        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+        return actor;
+    }
+
+    if (gLinkExtraData.responsability == ROOM_OWNER) {
+        PosRot p;
+
+        p.pos.x = posX;
+        p.pos.y = posY;
+        p.pos.z = posZ;
+
+        p.rot.x = rotX;
+        p.rot.y = rotY;
+        p.rot.z = rotZ;
+
+        if (actorId == 0x10) {
+            Multiplayer_Send_ActorSpawn(actorId, p, params);
+        }
+
+        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+        return actor;
+    }
+
+    if (ableToSpawnActors) {
+        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+        return actor;
+    }
+
+    return NULL;
+>>>>>>> Stashed changes
 }
 
 void Actor_rDraw(Actor* actor, GlobalContext* globalCtx) {

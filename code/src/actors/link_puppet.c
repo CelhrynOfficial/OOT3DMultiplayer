@@ -13,7 +13,11 @@ ActorInit EnLinkPuppet_InitVars = {
     0x1,                             // ID
     ACTORTYPE_NPC,                   // Type
     0xFF,                            // Room
+<<<<<<< Updated upstream
     0x2000410 | 0x04000000,                       // Flags
+=======
+    0x2000410 | 0x04000000,          // Flags
+>>>>>>> Stashed changes
     21,                              // Object ID (20: Adult, 21: Child)
     sizeof(EnLinkPuppet),            //
     (ActorFunc)EnLinkPuppet_Init,    //

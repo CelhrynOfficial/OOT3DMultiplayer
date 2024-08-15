@@ -2,8 +2,10 @@
 #define _PLAYER_H_
 
 #include "z3D/z3D.h"
+#include "multiplayer.h"
 
-extern u16 healthDecrement;
+extern ActorInit vanillaActorInit_Player;
+extern LinkExtraData gLinkExtraData;
 
 extern ActorInit vanillaActorInit_Player;
 

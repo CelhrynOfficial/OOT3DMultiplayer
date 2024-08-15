@@ -5,8 +5,6 @@
 #include "link_puppet.h"
 #include "common.h"
 
-static LinkGhost ghosts[16];
-
 #define INACTIVE_TIME_LIMIT (TICKS_PER_SEC * 3)
 
 void Multiplayer_Ghosts_Tick(void) {
@@ -19,20 +17,33 @@ void Multiplayer_Ghosts_Tick(void) {
     }
 }
 
-void Multiplayer_Ghosts_UpdateGhostData(u16 networkID, GhostData* ghostData, u8 isInGame) {
-    LinkGhost* ghostX = NULL;
-    // Find existing ghost
+LinkGhost* Multiplayer_Ghosts_GetGhostByIndex(size_t index) {
+    if (index >= ARRAY_SIZE(ghosts)) {
+        return NULL;
+    }
+    
+    return &ghosts[index];
+}
+
+LinkGhost* Multiplayer_Ghosts_GetGhost(u16 networkID) {
     for (size_t i = 0; i < ARRAY_SIZE(ghosts); i++) {
         LinkGhost* ghost = &ghosts[i];
         if (ghost->inUse && ghost->networkID == networkID) {
-            ghostX = ghost;
-            break;
+            return ghost;
         }
     }
+
+    return NULL;
+}
+
+void Multiplayer_Ghosts_UpdateGhostData(u16 networkID, GhostData* ghostData, u8 isInGame) {
+    LinkGhost* ghostX = Multiplayer_Ghosts_GetGhost(networkID);
+
     // Assign new ghost
     if (ghostX == NULL) {
         for (size_t i = 0; i < ARRAY_SIZE(ghosts); i++) {
             LinkGhost* ghost = &ghosts[i];
+            
             if (!ghost->inUse) {
                 ghost->inUse     = true;
                 ghost->networkID = networkID;
@@ -41,6 +52,7 @@ void Multiplayer_Ghosts_UpdateGhostData(u16 networkID, GhostData* ghostData, u8 
             }
         }
     }
+
     // Failsafe in case all spots are taken
     if (ghostX == NULL) {
         return;

@@ -4,6 +4,7 @@
 #include "3ds/types.h"
 #include "z3D/z3D.h"
 #include "colors.h"
+#include "multiplayer.h"
 
 #define LINK_LIMB_COUNT 25
 
@@ -40,12 +41,17 @@ typedef struct {
     u16 networkID;
     u8 isInGame;
     GhostData ghostData;
+    LinkExtraData extraData;
     u8 otherPlayerIndex;
 } LinkGhost;
+
+static LinkGhost ghosts[16];
 
 void Multiplayer_Ghosts_Tick(void);
 void Multiplayer_Ghosts_UpdateGhostData(u16 networkID, GhostData* ghostData, u8 isInGame);
 void Multiplayer_Ghosts_UpdateGhostData_JointTable(u16 networkID, LimbData* limbData);
+LinkGhost* Multiplayer_Ghosts_GetGhostByIndex(size_t index);
+LinkGhost* Multiplayer_Ghosts_GetGhost(u16 networkID);
 GhostData* Multiplayer_Ghosts_GetGhostData(u16 networkID);
 void Multiplayer_Ghosts_SpawnPuppets(void);
 
