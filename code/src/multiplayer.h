@@ -4,18 +4,32 @@
 #include "3ds/types.h"
 #include "z3D/z3D.h"
 
+#define MAX_ACTORS_IN_ROOM 100 // Définir la taille maximale du tableau
+
+
 typedef enum {
     ROOM_CLIENT,
     ROOM_OWNER
 } Responsability;
 
 typedef struct {
+    s16 actorId;
+    float posX, posY, posZ;
+    s16 rotX, rotY, rotZ;
+    s16 params;
+} ActorInfo;
+
+typedef struct {
     u32 location;
     Responsability responsability;
+    ActorInfo actorInfos[MAX_ACTORS_IN_ROOM]; // Liste des informations des acteurs
+    u8 numActorsInRoom;
 } LinkExtraData;
 
 extern bool ableToSpawnActors;
 extern u16 fullSyncerID;
+extern LinkExtraData gLinkExtraData;
+
 
 extern u32 mp_receivedPackets;
 extern bool mp_duplicateSendProtection;
@@ -85,5 +99,9 @@ void Multiplayer_Send_TransferOwnership(void);
 
 // Utils
 bool Multiplayer_DoesSomeoneOwnThisRoom(void);
+void Multiplayer_Receive_ActorsInRoom(u16 senderID);
+void Multiplayer_Send_ActorsInRoom(void);
+void Multiplayer_Receive_RequestActors(u16 senderID);
+void Multiplayer_Send_RequestActors(void);
 
 #endif //_MULTIPLAYER_H_

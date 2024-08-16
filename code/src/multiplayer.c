@@ -2607,8 +2607,11 @@ void Multiplayer_Receive_RequestActors(u16 senderID) {
     Multiplayer_Send_ActorsInRoom();
 }
 
+<<<<<<< Updated upstream
 
 
+=======
+>>>>>>> Stashed changes
 void Multiplayer_Send_ActorsInRoom() {
     if (gLinkExtraData.responsability != ROOM_OWNER || !IsSendReceiveReady()) {
         return;
@@ -2622,7 +2625,10 @@ void Multiplayer_Send_ActorsInRoom() {
 
     // Envoyer chaque acteur avec ses informations
     for (u8 i = 0; i < gLinkExtraData.numActorsInRoom; i++) {
+<<<<<<< Updated upstream
         if getActorType()
+=======
+>>>>>>> Stashed changes
         ActorInfo* actorInfo = &gLinkExtraData.actorInfos[i];
 
         mBuffer[memSpacer++] = actorInfo->actorId;

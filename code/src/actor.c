@@ -332,41 +332,59 @@ void Actor_rUpdate(Actor* actor, GlobalContext* globalCtx) {
 #include "multiplayer.h"
 #include "notification.h"
 
+ActorType getActorType(u16 actorId) {
+    return (ActorType) gActorOverlayTable[actorId].initInfo->type;
+}
+
 extern Actor* ActorSpawnOrig(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) __attribute__((pcs("aapcs-vfp")));
 
 __attribute__((pcs("aapcs-vfp")))
 Actor* Actor_rSpawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, float posX, float posY, float posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params, s32 initImmediately) {
     if (!IsInGame() || actorId == 0x0 || actorId == 0x1) {
-        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
-        return actor;
+        return ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
     }
 
     if (gLinkExtraData.responsability == ROOM_OWNER) {
         PosRot p;
-
         p.pos.x = posX;
         p.pos.y = posY;
         p.pos.z = posZ;
-
         p.rot.x = rotX;
         p.rot.y = rotY;
         p.rot.z = rotZ;
 
-        if (actorId == 0x10) {
-            Multiplayer_Send_ActorSpawn(actorId, p, params);
+        Multiplayer_Send_ActorSpawn(actorId, p, params);
+
+        // Ajouter les informations de l'acteur à gLinkExtraData
+        if (gLinkExtraData.numActorsInRoom < MAX_ACTORS_IN_ROOM) {
+            ActorInfo* actorInfo = &gLinkExtraData.actorInfos[gLinkExtraData.numActorsInRoom];
+            actorInfo->actorId = actorId;
+            actorInfo->posX = posX;
+            actorInfo->posY = posY;
+            actorInfo->posZ = posZ;
+            actorInfo->rotX = rotX;
+            actorInfo->rotY = rotY;
+            actorInfo->rotZ = rotZ;
+            actorInfo->params = params;
+            
+            gLinkExtraData.numActorsInRoom++;
         }
 
-        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
-        return actor;
+        return ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
+    }
+
+    ActorType actorType = getActorType(actorId);
+    if ((actorType == ACTORTYPE_NPC || actorType == ACTORTYPE_ENEMY)) {
+        return ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
     }
 
     if (ableToSpawnActors) {
-        Actor* actor = ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
-        return actor;
+        return ActorSpawnOrig(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params, initImmediately);
     }
 
     return NULL;
 }
+
 
 void Actor_rDraw(Actor* actor, GlobalContext* globalCtx) {
     actor->draw(actor, globalCtx);

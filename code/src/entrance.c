@@ -29,13 +29,31 @@ u8 EntranceIsNull(EntranceOverride* entranceOverride) {
 #include "notification.h"
 #include "player.h"
 
+u32 crc32(const char *s) {
+    u32 n = strlen(s);
+	u32 crc=0xFFFFFFFF;
+	
+	for(u32 i=0;i<n;i++) {
+		char ch=s[i];
+		for(u32 j=0;j<8;j++) {
+			u32 b=(ch^crc)&1;
+			crc>>=1;
+			if(b) crc=crc^0xEDB88320;
+			ch>>=1;
+		}
+	}
+	
+	return ~crc;
+}
+
 s16 Entrance_OverrideNextIndex(s16 nextEntranceIndex) {
     // Before changing
     if (gLinkExtraData.responsability == ROOM_OWNER) {
         Multiplayer_Send_TransferOwnership();
     }
 
-    gLinkExtraData.location = nextEntranceIndex;
+    EntranceData* entranceData = GetEntranceData(nextEntranceIndex);
+    gLinkExtraData.location = crc32(entranceData->destination);
 
     if (!Multiplayer_DoesSomeoneOwnThisRoom()) {
         gLinkExtraData.responsability = ROOM_OWNER;
@@ -61,6 +79,7 @@ void Entrance_EnteredLocation(void) {
     }
 
     ableToSpawnActors = true;
+    Multiplayer_Send_RequestActors();
 
     SaveFile_SetSceneDiscovered(gGlobalContext->sceneNum);
 }
