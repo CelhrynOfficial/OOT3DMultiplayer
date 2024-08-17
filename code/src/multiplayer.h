@@ -83,6 +83,9 @@ void Multiplayer_Send_AmmoChange(u8 index, s8 diff);
 void Multiplayer_Send_LinkExtraData(LinkExtraData* extraData);
 void Multiplayer_Send_TransferOwnership(void);
 
+void Multiplayer_Send_ActorsInRoom(void);
+void Multiplayer_Send_RequestActorsInRoom(void);
+
 // Utils
 bool Multiplayer_DoesSomeoneOwnThisRoom(void);
 

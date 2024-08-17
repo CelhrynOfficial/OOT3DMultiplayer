@@ -323,6 +323,8 @@ typedef enum {
     PACKET_AMMOCHANGE,
     PACKET_EXTRA_DATA,
     PACKET_TRANSFER_OWNERSHIP,
+    PACKET_REQUEST_ACTORS_IN_ROOM,
+    PACKET_SEND_ACTORS_IN_ROOM,
 } PacketIdentifier;
 
 static u8 IsSendReceiveReady(void) {
@@ -2808,6 +2810,105 @@ void Multiplayer_Receive_TransferOwnership(u16 senderID) {
     }
 }
 
+void Multiplayer_Send_RequestActorsInRoom(void) {
+    if (!IsSendReceiveReady() || gSettingsContext.mp_SharedProgress == OFF) {
+        return;
+    }
+
+    memset(mBuffer, 0, mBufSize);
+    u8 memSpacer = PrepareSharedProgressPacket(PACKET_REQUEST_ACTORS_IN_ROOM);
+
+    Multiplayer_SendPacket(memSpacer, UDS_BROADCAST_NETWORKNODEID);
+}
+
+void Multiplayer_Receive_RequestActorsInRoom(u16 senderID) {
+    if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
+        return;
+    }
+
+    u8 memSpacer = GetSharedProgressMemSpacerOffset();
+
+    LinkGhost* ghost = Multiplayer_Ghosts_GetGhost(senderID);
+    if (ghost == NULL || !ghost->inUse) {
+        return;
+    }
+
+    if (gLinkExtraData.responsability == ROOM_OWNER && ghost->extraData.location == gLinkExtraData.location) {
+        Multiplayer_Send_ActorsInRoom();
+    }
+}
+
+void Multiplayer_Send_ActorsInRoom(void) {
+    if (!IsSendReceiveReady() || gSettingsContext.mp_SharedProgress == OFF) {
+        return;
+    }
+
+    memset(mBuffer, 0, mBufSize);
+    u8 memSpacer = PrepareSharedProgressPacket(PACKET_SEND_ACTORS_IN_ROOM);
+
+    if (gLinkExtraData.responsability != ROOM_OWNER) {
+        return;
+    }
+
+    u8 actorCountMemSpacer = memSpacer;
+    u32 actorCount = 0;
+    memSpacer++;
+    
+    for (Actor* actor = gGlobalContext->actorCtx.actorList[ACTORTYPE_NPC].first; actor != NULL; actor = actor->next) {
+        if (actor->id == 0x0 || actor->id == 0x1) {
+            continue;
+        }
+
+        if (actor->type != ACTORTYPE_NPC) {
+            continue;
+        }
+
+        mBuffer[memSpacer++] = actor->id;
+        mBuffer[memSpacer++] = actor->params;
+        memcpy(&mBuffer[memSpacer], &actor->world, sizeof(PosRot));
+        memSpacer += sizeof(PosRot) / 4;
+
+        actorCount++;
+    }
+
+    Notification__Show("Debug", "Sending actors in room\nActor Count: %d", actorCount);
+
+    mBuffer[actorCountMemSpacer] = actorCount;
+
+    Multiplayer_SendPacket(memSpacer, UDS_BROADCAST_NETWORKNODEID);
+}
+
+void Multiplayer_Receive_ActorsInRoom(u16 senderID) {
+    if (!IsInSameSyncGroup() || gSettingsContext.mp_SharedProgress == OFF) {
+        return;
+    }
+
+    u8 memSpacer = GetSharedProgressMemSpacerOffset();
+
+    LinkGhost* ghost = Multiplayer_Ghosts_GetGhost(senderID);
+    if (ghost == NULL || !ghost->inUse || ghost->extraData.responsability != ROOM_OWNER) {
+        return;
+    }
+
+    if (gLinkExtraData.responsability == ROOM_CLIENT && ghost->extraData.location == gLinkExtraData.location) {
+        ableToSpawnActors = true;
+        u32 actorCount = mBuffer[memSpacer++];
+
+        Notification__Show("Debug", "aaa actors in room\nActor Count: %d", actorCount);
+
+        for (size_t i = 0; i < actorCount; i++) {
+            s16 actorId = mBuffer[memSpacer++];
+            s16 actorParams = mBuffer[memSpacer++];
+
+            PosRot p;
+            memcpy(&p, &mBuffer[memSpacer], sizeof(PosRot));
+            memSpacer += sizeof(PosRot) / 4;
+
+            Actor_Spawn(&gGlobalContext->actorCtx, gGlobalContext, actorId, p.pos.x, p.pos.y, p.pos.z, p.rot.x, p.rot.y, p.rot.z, actorParams, FALSE);
+        }
+    }
+}
+
 // Send & Receive
 
 static void Multiplayer_SendPacket(u16 packageSize, u16 targetID) {
@@ -2897,6 +2998,8 @@ static void Multiplayer_UnpackPacket(u16 senderID) {
         Multiplayer_Receive_AmmoChange,
         Multiplayer_Receive_LinkExtraData,
         Multiplayer_Receive_TransferOwnership,
+        Multiplayer_Receive_RequestActorsInRoom,
+        Multiplayer_Receive_ActorsInRoom,
     };
 
     receive_funcs[identifier](senderID);

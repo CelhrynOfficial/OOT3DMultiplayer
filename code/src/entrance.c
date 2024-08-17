@@ -80,6 +80,8 @@ void Entrance_EnteredLocation(void) {
 
     ableToSpawnActors = true;
 
+    Multiplayer_Send_RequestActorsInRoom();
+
     SaveFile_SetSceneDiscovered(gGlobalContext->sceneNum);
 }
 
