@@ -4,7 +4,7 @@ This mod is based on the amazing work done by [Gamestabled's OoT3D Randomizer](h
 
 However, I must express my deepest regret regarding the course of this project. Due to my lack of honesty about certain aspects, the team behind this project ultimately dissolved. I am truly sorry for how things turned out.
 
-## Features
+## Added features
 
 While the core of the mod remains heavily based on the work of others, we managed to add a few features, including:
 
