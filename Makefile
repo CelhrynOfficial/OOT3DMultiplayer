@@ -89,9 +89,9 @@ ifneq ($(BUILD),$(notdir $(CURDIR)))
 
 
 # export OUTPUT	:=	$(CURDIR)/$(TARGET)
-export MY_PATH := C:/Users/timot/Documents/Rangement/Emulation/3DS/Games
+export MY_PATH := C:/Users/Celhryn/Desktop/Citra/Jeux
 
-export OUTPUT	:=	$(MY_PATH)/$(TARGET)
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
 export TOPDIR	:=	$(CURDIR)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
