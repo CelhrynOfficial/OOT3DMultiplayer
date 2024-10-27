@@ -31,11 +31,11 @@ void PlayerActor_rUpdate(Actor* thisx, GlobalContext* globalCtx) {
         thisx->draw = PlayerActor_rDraw;
     }
 
-    if (rInputCtx.up.l) {
-        Actor* actor = Actor_Spawn(&gGlobalContext->actorCtx, globalCtx, 0x10, thisx->world.pos.x, thisx->world.pos.y, thisx->world.pos.z, 0, 0, 0, 0, FALSE);
-    } else if (rInputCtx.up.r) {
-        Notification__Show("Debug", "ID: %d\nRole: %d\nLocation: %d", fullSyncerID, (u32)gLinkExtraData.responsability, (u32)gLinkExtraData.location);
-    }
+    // if (rInputCtx.up.l) {
+    //     Actor* actor = Actor_Spawn(&gGlobalContext->actorCtx, globalCtx, 0x10, thisx->world.pos.x, thisx->world.pos.y, thisx->world.pos.z, 0, 0, 0, 0, FALSE);
+    // } else if (rInputCtx.up.r) {
+    //     Notification__Show("Debug", "ID: %d\nRole: %d\nLocation: %d", fullSyncerID, (u32)gLinkExtraData.responsability, (u32)gLinkExtraData.location);
+    // }
 }
 
 void PlayerActor_rDestroy(Actor* thisx, GlobalContext* globalCtx) {

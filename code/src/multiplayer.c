@@ -2806,7 +2806,7 @@ void Multiplayer_Receive_TransferOwnership(u16 senderID) {
 
     if (pupppetID == fullSyncerID) {
         gLinkExtraData.responsability = ROOM_OWNER;
-        Notification__Show("Debug", "Getting ownership");
+        //Notification__Show("Debug", "Getting ownership");
     }
 }
 
@@ -2871,7 +2871,7 @@ void Multiplayer_Send_ActorsInRoom(void) {
         actorCount++;
     }
 
-    Notification__Show("Debug", "Sending actors in room\nActor Count: %d", actorCount);
+    //Notification__Show("Debug", "Sending actors in room\nActor Count: %d", actorCount);
 
     mBuffer[actorCountMemSpacer] = actorCount;
 
@@ -2894,7 +2894,7 @@ void Multiplayer_Receive_ActorsInRoom(u16 senderID) {
         ableToSpawnActors = true;
         u32 actorCount = mBuffer[memSpacer++];
 
-        Notification__Show("Debug", "aaa actors in room\nActor Count: %d", actorCount);
+        //Notification__Show("Debug", "aaa actors in room\nActor Count: %d", actorCount);
 
         for (size_t i = 0; i < actorCount; i++) {
             s16 actorId = mBuffer[memSpacer++];
